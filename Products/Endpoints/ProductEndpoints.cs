@@ -1,5 +1,4 @@
 ﻿using DataEntities;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Products.Data;
 
@@ -11,7 +10,7 @@ public static class ProductEndpoints
     {
         var group = routes.MapGroup("/api/Product");
 
-        group.MapGet("/", [OutputCache] async (ProductDataContext db) =>
+        group.MapGet("/", async (ProductDataContext db) =>
         {
             return await db.Product.ToListAsync();
         })

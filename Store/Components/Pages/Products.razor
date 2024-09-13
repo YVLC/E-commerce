@@ -1,9 +1,11 @@
 ﻿@page "/products"
 @using DataEntities
+@using Microsoft.AspNetCore.OutputCaching
 @using Store.Services
 @inject ProductService ProductService
 @inject IConfiguration Configuration
 @attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration=5)]
 
 <PageTitle>Products</PageTitle>
 
