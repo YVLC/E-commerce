@@ -38,10 +38,6 @@ public class RandomFailureMiddleware : IMiddleware
 		if (path is null || !path.Contains("api/Product", StringComparison.InvariantCultureIgnoreCase))
 			return next(context);
 
-		if (Random.Shared.NextDouble() >= 0.6)
-		{
-			throw new Exception("Computer says no.");
-		}
 		return next(context);
 	}
 }
