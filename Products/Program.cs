@@ -5,16 +5,22 @@ using Products.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 
 // Add services to the container.
 builder.Services.AddSingleton<RandomFailureMiddleware>();
 
+builder.AddRedisOutputCache("cache");
 
 builder.Services.AddDbContext<ProductDataContext>(options =>
 	options.UseInMemoryDatabase("inmemproducts"));
 
 // Add services to the container.
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
+app.UseOutputCache();
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
