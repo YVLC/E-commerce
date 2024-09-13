@@ -1,9 +1,14 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var cache = builder.AddRedis("cache").WithRedisCommander();
+var cache = builder.AddRedis("cache");
 
-builder.AddProject<Projects.Products>("products").WithReference(cache);
+var db = builder.AddPostgres("db").WithPgAdmin();
 
-builder.AddProject<Projects.Store>("store");
+var productsdb = db.AddDatabase("productsdb");
+
+var products = builder.AddProject<Projects.Products>("products").WithReference(cache)
+        .WithReference(productsdb);
+
+builder.AddProject<Projects.Store>("store").WithReference(products);
 
 builder.Build().Run();

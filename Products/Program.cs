@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.AddNpgsqlDbContext<ProductDataContext>("productsdb");
 
 // Add services to the container.
 builder.Services.AddSingleton<RandomFailureMiddleware>();
