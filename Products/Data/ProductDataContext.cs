@@ -15,12 +15,13 @@ public class ProductDataContext : DbContext
 
 public static class Extensions
 {
-    public static void CreateDbIfNotExists(this IHost host)
+    public static async void CreateDbIfNotExists(this IHost host)
     {
         using var scope = host.Services.CreateScope();
 
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<ProductDataContext>();
+        Thread.Sleep(300);
         try
         {
             context.Database.EnsureCreated();
