@@ -1,5 +1,6 @@
 ﻿using DataEntities;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Products.Data;
 
@@ -23,16 +24,20 @@ public static class Extensions
         var context = services.GetRequiredService<ProductDataContext>();
         try
         {
-            // Ensure the database is created (synchronous).
             context.Database.EnsureCreated();
-            // Initialize the database asynchronously.
             await DbInitializer.Initialize(context);
+        }
+        catch (NpgsqlException npgsqlEx)
+        {
+            // Specific handling for Npgsql exceptions
+            Console.Error.WriteLine($"Npgsql Exception: {npgsqlEx.Message}");
+            Console.Error.WriteLine(npgsqlEx.StackTrace);
+            throw;
         }
         catch (Exception ex)
         {
-            // Log the exception (consider using a logging framework)
-            Console.Error.WriteLine($"Database initialization failed: {ex.Message}");
-            throw; // Rethrow to preserve stack trace
+            Console.Error.WriteLine($"Database initialization failed: {ex}");
+            throw;
         }
     }
 }
@@ -44,6 +49,7 @@ public static class DbInitializer
         if (await context.Product.AnyAsync()) // Use async method here
             return;
 
+        Thread.Sleep(300);
         var products = new List<Product>
         {
             new Product { Name = "Solar Powered Flashlight", Description = "A fantastic product for outdoor enthusiasts", Price = 19.99m, ImageUrl = "product1.png" },
