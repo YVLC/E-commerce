@@ -15,30 +15,33 @@ public class ProductDataContext : DbContext
 
 public static class Extensions
 {
-    public static async void CreateDbIfNotExists(this IHost host)
+    public static async Task CreateDbIfNotExists(this IHost host)
     {
         using var scope = host.Services.CreateScope();
 
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<ProductDataContext>();
-        Thread.Sleep(300);
         try
         {
+            // Ensure the database is created (synchronous).
             context.Database.EnsureCreated();
-            DbInitializer.Initialize(context);
+            // Initialize the database asynchronously.
+            await DbInitializer.Initialize(context);
         }
-        catch (Exception ex) {
-            throw new Exception(ex.Message);
+        catch (Exception ex)
+        {
+            // Log the exception (consider using a logging framework)
+            Console.Error.WriteLine($"Database initialization failed: {ex.Message}");
+            throw; // Rethrow to preserve stack trace
         }
     }
 }
 
-
 public static class DbInitializer
 {
-    public static void Initialize(ProductDataContext context)
+    public static async Task Initialize(ProductDataContext context)
     {
-        if (context.Product.Any())
+        if (await context.Product.AnyAsync()) // Use async method here
             return;
 
         var products = new List<Product>
@@ -51,11 +54,11 @@ public static class DbInitializer
             new Product { Name = "Camping Cookware", Description = "This cookware set is ideal for cooking outdoors", Price = 29.99m, ImageUrl = "product6.png" },
             new Product { Name = "Camping Stove", Description = "This stove is perfect for cooking outdoors", Price = 49.99m, ImageUrl = "product7.png" },
             new Product { Name = "Camping Lantern", Description = "This lantern is perfect for lighting up your campsite", Price = 19.99m, ImageUrl = "product8.png" },
-            new Product {  Name = "Camping Tent", Description = "This tent is perfect for camping trips", Price = 99.99m, ImageUrl = "product9.png" },
+            new Product { Name = "Camping Tent", Description = "This tent is perfect for camping trips", Price = 99.99m, ImageUrl = "product9.png" },
         };
 
         context.AddRange(products);
 
-        context.SaveChanges();
+        await context.SaveChangesAsync(); // Save changes asynchronously
     }
 }

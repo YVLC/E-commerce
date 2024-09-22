@@ -21,6 +21,6 @@ app.MapProductEndpoints();
 
 app.UseStaticFiles();
 
-app.CreateDbIfNotExists();
+await app.CreateDbIfNotExists();
 
 app.Run();

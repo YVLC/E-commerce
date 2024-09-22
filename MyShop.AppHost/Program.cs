@@ -11,4 +11,12 @@ var products = builder.AddProject<Projects.Products>("products")
 
 builder.AddProject<Projects.Store>("store").WithReference(products).WithReference(cache);
 
+builder.AddProject<Projects.Payment>("payment");
+
+builder.AddProject<Projects.Authentication>("authentication");
+
+builder.AddProject<Projects.Basket>("basket");
+
+builder.AddProject<Projects.NotificationService>("notidicationservice");
+
 builder.Build().Run();
