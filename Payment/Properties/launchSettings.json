@@ -12,6 +12,7 @@
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "launchUrl": "api/Payment",
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5231",
       "environmentVariables": {
@@ -30,6 +31,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "api/Payment",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

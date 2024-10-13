@@ -12,6 +12,13 @@ builder.Services.AddHttpClient<ProductService>(c =>
 
     c.BaseAddress = new(url);
 });
+builder.Services.AddSingleton<PaymentService>();
+builder.Services.AddHttpClient<PaymentService>(c =>
+{
+    var url = builder.Configuration["PaymentEndpoint"] ?? throw new InvalidOperationException("PaymentEndpoint is not set");
+
+    c.BaseAddress = new(url);
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
