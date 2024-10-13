@@ -21,6 +21,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyShop.ServiceDefaults", "MyShop.ServiceDefaults\MyShop.ServiceDefaults.csproj", "{A4D8571B-D24B-4430-AA6C-C861551EF599}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment", "Payment\Payment.csproj", "{DD6806C9-0AE7-4EFC-917B-3CB645E98AF4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E42C986A-98CA-4FBC-9F9F-88F8C7CB1603} = {E42C986A-98CA-4FBC-9F9F-88F8C7CB1603}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication", "Authentication\Authentication.csproj", "{10A5CE43-73DD-4A30-8FA3-1407C5BE4C4D}"
 EndProject

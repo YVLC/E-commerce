@@ -4,7 +4,7 @@ namespace DataEntities;
 
 public class Product
 {
-    [JsonPropertyName("id")]
+    [JsonPropertyName("productid")]
     public int Id { get; set; }
 
     [JsonPropertyName("name")]
