@@ -1,6 +1,6 @@
-﻿using DataEntities;
+﻿using Payments.Data;
+using DataEntities;
 using Microsoft.EntityFrameworkCore;
-using Payments.Data;
 
 namespace Payments.Endpoints;
 
