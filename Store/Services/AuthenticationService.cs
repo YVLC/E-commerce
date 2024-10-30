@@ -14,7 +14,7 @@ public class AuthenticationService
     public async Task<List<Authentication>> GetAuthentications()
     {
         List<Authentication>? authentications = null;
-        var response = await httpClient.GetAsync("/api/Authentication");
+        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions
@@ -27,10 +27,10 @@ public class AuthenticationService
 
         return authentications ?? new List<Authentication>();
     }
-    public async Task<bool> Login(Login obj)
+    public async Task<bool> Login(string email, string password)
     {
         List<Authentication>? authentications = null;
-        var response = await httpClient.GetAsync("/api/Authentication");
+        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions
@@ -42,7 +42,7 @@ public class AuthenticationService
 
             foreach(var a in authentications)
             {
-                if (a.email == obj.Email && a.password == obj.Password)
+                if (a.email == email && a.password == password)
                 {
                     return true;
                 }

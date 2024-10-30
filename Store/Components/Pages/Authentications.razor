@@ -1,17 +1,18 @@
 ﻿@page "/Login"
-
 @using DataEntities
 @using Store.Services
 @inject Store.Services.AuthenticationService AuthenticationService
 @inject IConfiguration Configuration
 @attribute [StreamRendering(true)]
 @inject NavigationManager NavigationManager
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@rendermode InteractiveServer
+@using System.Text.Json
 
 <div class="card">
     <h4 class="card-header">Login</h4>
     <div class="card-body">
-        <EditForm Model="@model" OnSubmit="OnValidSubmit" FormName="login">
-            <DataAnnotationsValidator />
+        <EditForm Model="@model" OnValidSubmit="OnSubmit" FormName="login">
             <div class="form-group">
                 <label>Email</label>
                 <InputText @bind-Value="model.Email" class="form-control" />
@@ -20,8 +21,8 @@
                 <label>Password</label>
                 <InputText @bind-Value="model.Password" type="password" class="form-control" />
             </div>
-            <button disabled="@loading" class="btn btn-primary">
-                @if (loading) 
+            <button type="submit" disabled="@loading" class="btn btn-primary">
+                @if (loading)
                 {
                     <span class="spinner-border spinner-border-sm mr-1"></span>
                 }
@@ -36,24 +37,33 @@
     private Models.Login model = new Models.Login();
     private bool loading;
 
-    private async void OnValidSubmit()
+    private async Task OnSubmit()
     {
-
-        loading = true;
+        loading = true; // Set loading state to true immediately after starting the submission
         try
         {
-            var a = await AuthenticationService.Login(model);
-            if(a ==true)
+            Console.WriteLine($"Email: {model.Email}, Password: {model.Password}");
+
+            // Call the login method and wait for the result
+            var isSuccess = await AuthenticationService.Login(model.Email, model.Password);
+            if (isSuccess)
+            {
                 NavigationManager.NavigateTo("/");
+            }
             else
             {
-               
+                // Handle failed login (e.g., show a message)
+                Console.WriteLine("Login failed.");
             }
         }
         catch (Exception ex)
         {
-            loading = false;
-            StateHasChanged();
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            loading = false; // Reset loading state after processing
+            StateHasChanged(); // Update the UI
         }
     }
 }
