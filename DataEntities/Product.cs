@@ -18,6 +18,12 @@ public class Product
 
     [JsonPropertyName("imageUrl")]
     public string? ImageUrl { get; set; }
+
+    [JsonPropertyName("tag")]
+    public string? Tag { get; set; }
+
+    [JsonPropertyName("type")]
+    public string? Type { get; set; }
 }
 
 

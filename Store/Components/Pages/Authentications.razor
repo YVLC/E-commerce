@@ -1,4 +1,4 @@
-﻿@page "/Login"
+﻿@page "/login"
 @using DataEntities
 @using Store.Services
 @inject Store.Services.AuthenticationService AuthenticationService
@@ -28,7 +28,7 @@
                 }
                 Login
             </button>
-            <NavLink href="account/register" class="btn btn-link">Register</NavLink>
+            <NavLink href="/register" class="btn btn-link">Register</NavLink>
         </EditForm>
     </div>
 </div>
@@ -42,13 +42,12 @@
         loading = true; // Set loading state to true immediately after starting the submission
         try
         {
-            Console.WriteLine($"Email: {model.Email}, Password: {model.Password}");
 
             // Call the login method and wait for the result
             var isSuccess = await AuthenticationService.Login(model.Email, model.Password);
             if (isSuccess)
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/products");
             }
             else
             {

@@ -1,0 +1,98 @@
+﻿@page "/register"
+@using DataEntities
+@using Store.Services
+@inject Store.Services.AuthenticationService AuthenticationService
+@inject IConfiguration Configuration
+@attribute [StreamRendering(true)]
+@inject NavigationManager NavigationManager
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@rendermode InteractiveServer
+@using System.Text.Json
+@using System.ComponentModel.DataAnnotations
+
+<div class="card">
+    <h4 class="card-header">Register</h4>
+    <div class="card-body">
+        <EditForm Model="@model" OnValidSubmit="OnSubmit" FormName="register">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label>Email</label>
+                <InputText @bind-Value="model.Email" class="form-control" />
+                <ValidationMessage For="@(() => model.Email)" />
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <InputText @bind-Value="model.Username" class="form-control" />
+                <ValidationMessage For="@(() => model.Username)" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="model.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => model.Password)" />
+            </div>
+            <div class="form-group">
+                <label>Repeat Password</label>
+                <InputText @bind-Value="model.RepeatPassword" type="password" class="form-control" />
+                <ValidationMessage For="@(() => model.RepeatPassword)" />
+            </div>
+            <div class="form-group">
+                <label>First Name</label>
+                <InputText @bind-Value="model.Firstname" class="form-control" />
+                <ValidationMessage For="@(() => model.Firstname)" />
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <InputText @bind-Value="model.Lastname" class="form-control" />
+                <ValidationMessage For="@(() => model.Lastname)" />
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <InputText @bind-Value="model.Phone_number" class="form-control" />
+                <ValidationMessage For="@(() => model.Phone_number)" />
+            </div>
+            <button type="submit" disabled="@loading" class="btn btn-primary">
+                @if (loading)
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Register
+            </button>
+            <NavLink href="/login" class="btn btn-link">Login</NavLink>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Models.Register model = new Models.Register();
+    private bool loading;
+
+    private async Task OnSubmit()
+    {
+        loading = true; // Set loading state to true immediately after starting the submission
+        try
+        {
+            // Call the registration method and wait for the result
+            var isSuccess = await AuthenticationService.Register(model.Email, model.Password, model.Username, model.Firstname, model.Lastname, model.Phone_number);
+            if (isSuccess)
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                // Handle failed registration (e.g., show a message)
+                Console.WriteLine("Registration failed.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            loading = false; // Reset loading state after processing
+            StateHasChanged(); // Update the UI
+        }
+    }
+}
