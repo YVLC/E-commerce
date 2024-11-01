@@ -51,7 +51,7 @@ public class AuthenticationService
         }
         return false;
     }
-    public async Task<bool> Register(string email, string password, string username, string firstname, string lastname, string? phonenumber)
+    public async Task<bool> Register(string email, string password, string username, string firstname, string lastname, string? phonenumber, string address, string postcode)
     {
         List<Authentication>? authentications = null;
 
@@ -78,7 +78,9 @@ public class AuthenticationService
                 username = username,
                 firstname = firstname,
                 lastname = lastname,
-                phone_number = phonenumber
+                phone_number = phonenumber,
+                address = address,
+                postcode = postcode
             };
             var postResponse = await httpClient.PostAsJsonAsync("https://localhost:7238/api/Authentication/", newUser);
             Console.WriteLine(postResponse.ToString());

@@ -29,5 +29,13 @@ namespace Store.Components.Models
         [Required(ErrorMessage = "Phone number is required.")]
         [Phone(ErrorMessage = "Invalid phone number.")]
         public string Phone_number { get; set; }
+
+        [Required(ErrorMessage = "Address is required.")]
+        [Phone(ErrorMessage = "Invalid address.")]
+        public string Address { get; set; }
+
+        [Required(ErrorMessage = "Postcode required.")]
+        [Phone(ErrorMessage = "Invalid postcode")]
+        public string Postcode { get; set; }
     }
 }
