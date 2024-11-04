@@ -39,7 +39,9 @@ public static class AuthenticationEndpoints
                   .SetProperty(m => m.username, authentication.username)
                   .SetProperty(m => m.firstname, authentication.firstname)
                   .SetProperty(m => m.lastname, authentication.lastname)
-                  .SetProperty(m => m.phone_number, authentication.phone_number)
+                  .SetProperty(m => m.address, authentication.address)
+                  .SetProperty(m => m.postcode, authentication.postcode)
+                  .SetProperty(m => m.role, "User")
                 );
 
             return affected == 1 ? Results.Ok() : Results.NotFound();
