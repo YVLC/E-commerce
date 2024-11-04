@@ -1,9 +1,11 @@
 ﻿@page "/payments"
 @using DataEntities
+@using Microsoft.AspNetCore.Authorization
 @using Store.Services
 @inject PaymentService PaymentService
 @inject IConfiguration Configuration
 @attribute [StreamRendering(true)]
+@attribute [Authorize(Roles = "Administrator, User")]
 
 <h1>Payments</h1>
 

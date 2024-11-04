@@ -12,8 +12,4 @@
     <ProjectReference Include="..\MyShop.ServiceDefaults\MyShop.ServiceDefaults.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\Pages\Account\" />
-  </ItemGroup>
-
 </Project>
