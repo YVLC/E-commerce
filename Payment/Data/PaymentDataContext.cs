@@ -23,22 +23,52 @@ public static class Extensions
 
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<PaymentDataContext>();
-        try
+
+        int maxRetries = 5;   // Maximum number of retries
+        int delay = 1000;     // Initial delay in milliseconds (1 second)
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
-            context.Database.EnsureCreated();
-            await DbInitializer.Initialize(context);
-        }
-        catch (NpgsqlException npgsqlEx)
-        {
-            // Specific handling for Npgsql exceptions
-            Console.Error.WriteLine($"Npgsql Exception: {npgsqlEx.Message}");
-            Console.Error.WriteLine(npgsqlEx.StackTrace);
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Database initialization failed: {ex}");
-            throw;
+            try
+            {
+                await context.Database.EnsureCreatedAsync();
+                await DbInitializer.Initialize(context);
+                Console.WriteLine("Database initialized successfully.");
+                break; // Exit loop if successful
+            }
+            catch (NpgsqlException npgsqlEx)
+            {
+                Console.Error.WriteLine($"Npgsql Exception on attempt {attempt}: {npgsqlEx.Message}");
+                Console.Error.WriteLine(npgsqlEx.StackTrace);
+
+                if (attempt == maxRetries)
+                {
+                    Console.Error.WriteLine("Max retry attempts reached. Failing...");
+                    throw; // Rethrow the exception after max retries
+                }
+            }
+            catch (EndOfStreamException eosEx)
+            {
+                Console.Error.WriteLine($"Stream ended unexpectedly on attempt {attempt}: {eosEx.Message}");
+                Console.Error.WriteLine(eosEx.StackTrace);
+
+                if (attempt == maxRetries)
+                {
+                    Console.Error.WriteLine("Max retry attempts reached. Failing...");
+                    throw; // Rethrow the exception after max retries
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Unexpected error on attempt {attempt}: {ex.Message}");
+                if (attempt == maxRetries)
+                {
+                    throw; // Rethrow the exception after max retries
+                }
+            }
+            // Exponential backoff delay
+            await Task.Delay(delay);
+            delay *= 2; // Double the delay for the next attempt
         }
     }
 }

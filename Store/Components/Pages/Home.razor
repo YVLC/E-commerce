@@ -2,6 +2,22 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Home</h1>
-
-Welcome to the best e-commerce platform in the world - TinyShop!
+<div class="row">
+    <div class="col-12">
+        <h2 class="fw-bolder">Welcome to <span class="text-danger">Welcome to the Store</span></h2>
+    </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <AuthorizeView>
+                        <NotAuthorized>
+                            <span>You are not logged in. Please <a class="fw-bolder" href="/login">click here</a> to login.</span>
+                        </NotAuthorized>
+                        <Authorized>
+                            <span>Logged in as <b>@context. User. Identity. Name</b>. <a class="fw-bolder" href="/logout">Click here"</a> to logout.</span>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+        </div>
+    </div>
+</div>

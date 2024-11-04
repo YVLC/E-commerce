@@ -1,13 +1,12 @@
 ﻿@page "/login"
 @using DataEntities
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
 @using Store.Services
 @inject Store.Services.AuthenticationService AuthenticationService
-@inject IConfiguration Configuration
-@attribute [StreamRendering(true)]
 @inject NavigationManager NavigationManager
-@using static Microsoft.AspNetCore.Components.Web.RenderMode
-@rendermode InteractiveServer
-@using System.Text.Json
+@inject CustomAuthenticationStateProvider AuthStateProvider // Injecting the custom AuthenticationStateProvider
+@using System.Security.Claims
 
 <div class="card">
     <h4 class="card-header">Login</h4>
@@ -34,7 +33,10 @@
 </div>
 
 @code {
-    private Models.Login model = new Models.Login();
+
+
+    [SupplyParameterFromForm]
+    private Models.Login model { get; set; } = new();
     private bool loading;
 
     private async Task OnSubmit()
@@ -42,12 +44,14 @@
         loading = true; // Set loading state to true immediately after starting the submission
         try
         {
-
             // Call the login method and wait for the result
             var isSuccess = await AuthenticationService.Login(model.Email, model.Password);
-            if (isSuccess)
+            if (isSuccess != null)
             {
-                NavigationManager.NavigateTo("/products");
+                // Sign in using the CustomAuthenticationStateProvider
+                await AuthStateProvider.SignInAsync(model.Email, isSuccess); // Pass the role directly
+
+                NavigationManager.NavigateTo("/"); // Redirect to the home page
             }
             else
             {

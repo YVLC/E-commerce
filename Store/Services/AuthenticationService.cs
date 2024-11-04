@@ -1,15 +1,19 @@
 ﻿using DataEntities;
 using Store.Components.Models;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace Store.Services;
 
 public class AuthenticationService
 {
-    HttpClient httpClient;
-    public AuthenticationService(HttpClient httpClient)
+    private readonly HttpClient httpClient;
+    private readonly IHttpContextAccessor httpContextAccessor; // To access the current HttpContext
+
+    public AuthenticationService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
     {
         this.httpClient = httpClient;
+        this.httpContextAccessor = httpContextAccessor;
     }
     public async Task<List<Authentication>> GetAuthentications()
     {
@@ -27,30 +31,18 @@ public class AuthenticationService
 
         return authentications ?? new List<Authentication>();
     }
-    public async Task<bool> Login(string email, string password)
+    public async Task<string?> Login(string email, string password)
+{
+    var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
+    if (response.IsSuccessStatusCode)
     {
-        List<Authentication>? authentications = null;
-        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
-        if (response.IsSuccessStatusCode)
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
+        var authentications = await response.Content.ReadFromJsonAsync(AuthSerializerContext.Default.ListAuthentication);
 
-            authentications = await response.Content.ReadFromJsonAsync(AuthSerializerContext.Default.ListAuthentication);
-
-            foreach (var a in authentications)
-            {
-                if (a.email == email && a.password == password)
-                {
-                    return true;
-                }
-            }
-
-        }
-        return false;
+        var user = authentications?.FirstOrDefault(a => a.email == email && a.password == password);
+        return user?.role; // Return the role if found; null otherwise
     }
+    return null;
+}
     public async Task<bool> Register(string email, string password, string username, string firstname, string lastname, string? phonenumber, string address, string postcode)
     {
         List<Authentication>? authentications = null;
@@ -87,5 +79,19 @@ public class AuthenticationService
             return postResponse.IsSuccessStatusCode;
         }
         return false;
+    }
+
+    internal async Task<ClaimsPrincipal> GetCurrentUserAsync()
+    {
+        var context = httpContextAccessor.HttpContext;
+        var user = context?.User;
+
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            return user; // Return the current user's ClaimsPrincipal
+        }
+
+        // Optionally handle cases where the user is not authenticated
+        return new ClaimsPrincipal(new ClaimsIdentity()); // Or return null based on your needs
     }
 }

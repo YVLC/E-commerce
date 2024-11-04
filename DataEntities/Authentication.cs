@@ -39,6 +39,9 @@ namespace DataEntities
 
         [JsonPropertyName("postcode")]
         public string postcode { get; set; }
+
+        [JsonPropertyName("role")]
+        public string role { get; set; }
     }
 
 

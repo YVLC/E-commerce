@@ -1,4 +1,8 @@
-﻿<h3>Account</h3>
+﻿@page "/account"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrator, User")]
+
+<h3>Account</h3>
 
 @code {
 
