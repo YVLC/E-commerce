@@ -41,7 +41,6 @@ public static class AuthenticationEndpoints
                   .SetProperty(m => m.lastname, authentication.lastname)
                   .SetProperty(m => m.address, authentication.address)
                   .SetProperty(m => m.postcode, authentication.postcode)
-                  .SetProperty(m => m.role, "User")
                 );
 
             return affected == 1 ? Results.Ok() : Results.NotFound();
@@ -70,5 +69,17 @@ public static class AuthenticationEndpoints
         .WithName("DeleteAuthentication")
         .Produces<DataEntities.Authentication>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
+
+        group.MapPost("/{id}", async (Guid id, string role, DataEntities.Authentication authentication, AuthenticationDataContext db) =>
+        {
+            DataEntities.Authentication user = await db.Authentications.AsNoTracking().FirstOrDefaultAsync(model => model.userid == id);
+            user.role = role;
+            db.Authentications.Add(user);
+            await db.SaveChangesAsync();
+
+            return true;
+        })
+        .WithName("UpdateRole")
+        .Produces<DataEntities.Authentication>(StatusCodes.Status201Created);
     }
 }

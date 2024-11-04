@@ -66,13 +66,15 @@ public class AuthenticationService
             {
                 userid = guid,
                 email = email,
+                verifiedemail = false,
                 password = password, // Ensure you hash the password before storing it
                 username = username,
                 firstname = firstname,
                 lastname = lastname,
                 phone_number = phonenumber,
                 address = address,
-                postcode = postcode
+                postcode = postcode,
+                role = "User"
             };
             var postResponse = await httpClient.PostAsJsonAsync("https://localhost:7238/api/Authentication/", newUser);
             Console.WriteLine(postResponse.ToString());
@@ -129,5 +131,41 @@ public class AuthenticationService
 
         // Optionally handle cases where the user is not authenticated
         return new ClaimsPrincipal(new ClaimsIdentity()); // Or return null based on your needs
+    }
+
+    public async Task<bool> UpdateRole(Guid userId, string roleName)
+    {
+        // Retrieve user list from the API
+        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
+        if (!response.IsSuccessStatusCode)
+        {
+            return false; // API call failed
+        }
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        // Deserialize the list of users
+        var users = await response.Content.ReadFromJsonAsync(AuthSerializerContext.Default.ListAuthentication);
+        if (users == null)
+        {
+            return false; // Unable to retrieve users
+        }
+
+        // Find the user by their ID
+        var user = users.FirstOrDefault(u => u.userid == userId);
+        if (user == null)
+        {
+            return false; // User not found
+        }
+
+        // Update the role of the found user
+        user.role = roleName;
+
+        // Send the updated user object back to the API
+        var updateResponse = await httpClient.PostAsJsonAsync($"https://localhost:7238/api/Authentication/{userId}", user);
+        return updateResponse.IsSuccessStatusCode;
     }
 }

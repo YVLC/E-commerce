@@ -19,6 +19,9 @@ namespace DataEntities
         [JsonPropertyName("email")]
         public string email { get; set; }
 
+        [JsonPropertyName("verifiedemail")]
+        public bool verifiedemail { get; set; }
+
         [JsonPropertyName("password")]
         public string password { get; set; }
 
