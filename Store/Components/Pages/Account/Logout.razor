@@ -10,7 +10,6 @@
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @rendermode InteractiveServer
 @using System.Text.Json
-@attribute [Authorize(Roles = "Administrator, User")]
 
     <div class="row">
         <div class="col-12">
@@ -20,7 +19,7 @@
                      <img src="/images/logout.png" style="max-height: 5rem" />
                     </div>
                     <div class="text-center mt-2">
-                        <span class="text-danger fw-bolder">You've successfully logged out of the application'.</span
+                        <span class="text-danger fw-bolder">You've successfully logged out of the application'.</span>
                     </div>
                 </div>
             </div>
