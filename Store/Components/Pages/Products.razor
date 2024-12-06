@@ -3,9 +3,12 @@
 @using Microsoft.AspNetCore.OutputCaching
 @using Store.Services
 @inject ProductService ProductService
+@inject BasketService BasketService // Inject the BasketService
 @inject IConfiguration Configuration
 @attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration=5)]
+@attribute [OutputCache(Duration = 5)]
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@rendermode InteractiveServer
 
 <h1>Products</h1>
 
@@ -24,6 +27,7 @@ else
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Action</th> <!-- Add a new column for the button -->
             </tr>
         </thead>
         <tbody>
@@ -34,6 +38,10 @@ else
                     <td>@product.Name</td>
                     <td>@product.Description</td>
                     <td>@product.Price</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => AddToBasket(product)"> Add to Basket</button>
+
+                    </td>
                 </tr>
             }
         </tbody>
@@ -52,4 +60,11 @@ else
         products = await ProductService.GetProducts();
     }
 
+    // Method to add the selected product to the basket
+    async Task AddToBasket(Product product)
+    {
+        // Call the BasketService to add the product to the basket
+        BasketService.AddToBasket(product);
+        Console.WriteLine($"{product.Name} added to basket.");
+    }
 }

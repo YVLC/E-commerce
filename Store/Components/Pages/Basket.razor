@@ -1,0 +1,42 @@
+﻿@page "/basket"
+@using DataEntities
+@using Store.Services
+@inject BasketService BasketService
+
+<h1>Your Basket</h1>
+
+@if (basketItems.Count == 0)
+{
+    <p>Your basket is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in basketItems)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Product> basketItems = new();
+
+    protected override void OnInitialized()
+    {
+        basketItems = BasketService.GetBasket();
+    }
+}

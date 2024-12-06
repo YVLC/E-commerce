@@ -21,6 +21,7 @@ app.MapPaymentEndpoints();
 
 app.UseStaticFiles();
 
+
 await app.CreateDbIfNotExists();
 
 app.Run();

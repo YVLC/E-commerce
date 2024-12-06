@@ -52,7 +52,8 @@
                 // Sign in using the CustomAuthenticationStateProvider
                 await AuthStateProvider.SignInAsync(model.Email, isSuccess); // Pass the role directly
 
-                NavigationManager.NavigateTo("/"); // Redirect to the home page
+                if (!loading) return; // Prevent navigation if the task is already completed
+                await InvokeAsync(() => NavigationManager.NavigateTo("/"));
             }
             else
             {

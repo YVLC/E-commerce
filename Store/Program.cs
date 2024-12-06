@@ -28,6 +28,7 @@ builder.Services.AddHttpClient<AuthenticationService>(c =>
     var url = builder.Configuration["AuthenticationEndpoint"] ?? throw new InvalidOperationException("Authentication is not set");
     c.BaseAddress = new(url);
 });
+builder.Services.AddScoped<BasketService>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -35,7 +36,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -43,38 +43,29 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.Cookie.Name = "auth_token";
-        options.LoginPath = "/login"; // Path to the login page
-        options.AccessDeniedPath = "/access-denied"; // Path for access denied
-        options.Cookie.MaxAge = TimeSpan.FromMinutes(30); // Set cookie expiration
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/access-denied";
+        options.Cookie.MaxAge = TimeSpan.FromMinutes(30);
     });
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
-}
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-// Middleware configuration order
-app.UseRouting();
-
-// Add authentication and authorization middleware
-app.UseAuthentication();
-app.UseAuthorization();
-
-// Add anti-forgery middleware after authentication and authorization
-app.UseAntiforgery();
-
+// Make sure you only register these routes once
 app.MapRazorPages();
 app.MapBlazorHub();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+// Middleware order
+app.UseRouting();
+app.Use(async (context, next) =>
+{
+    var endpoint = context.GetEndpoint();
+    Console.WriteLine($"Matched endpoint: {endpoint?.DisplayName ?? "None"}");
+    await next();
+});
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseAntiforgery();
+app.MapDefaultEndpoints();  // If this method is mapping conflicting routes, consider removing or modifying it.
 
 app.Run();
