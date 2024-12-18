@@ -1,0 +1,41 @@
+﻿@page "/items"
+@using Store.Services
+@using Store.WebAppComponents
+@inject NavigationManager Nav
+@inject ProductService CatalogService
+@attribute [StreamRendering]
+
+<PageTitle>AdventureWorks</PageTitle>
+<div class="catalog">
+    @if (catalogResult is null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div>
+            <div class="catalog-items">
+                @foreach (var item in catalogResult.Data)
+                {
+                    <ProductItem Item="@item" />
+                }
+            </div>
+
+        </div>
+    }
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "brand")]
+    public int? BrandId { get; set; }
+
+    [SupplyParameterFromQuery(Name = "type")]
+    public int? ItemTypeId { get; set; }
+
+    CatalogResult? catalogResult;
+
+    protected override async Task OnInitializedAsync()
+    {
+        catalogResult = await CatalogService.GetAllCatalogItems();
+    }
+}

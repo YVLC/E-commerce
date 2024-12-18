@@ -1,19 +1,17 @@
 ﻿using DataEntities;
+using Store.WebAppComponents;
 using System.Text.Json;
 
 namespace Store.Services;
 
-public class ProductService
+public class ProductService(HttpClient httpClient)
 {
-    HttpClient httpClient;
-    public ProductService(HttpClient httpClient)
-    {
-        this.httpClient = httpClient;
-    }
+    private readonly string remoteServiceBaseUrl = "/api/Product";
+
     public async Task<List<Product>> GetProducts()
     {
         List<Product>? products = null;
-        var response = await httpClient.GetAsync("/api/Product");
+        var response = await httpClient.GetAsync(remoteServiceBaseUrl);
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions
@@ -26,5 +24,17 @@ public class ProductService
 
         return products ?? new List<Product>();
     }
-    
+
+    public async Task<CatalogResult> GetAllCatalogItems()
+    {
+        var items = await httpClient.GetFromJsonAsync<List<Item>>(remoteServiceBaseUrl);
+        return new CatalogResult(items ?? new List<Item>());
+    }
+
+    public Task<Item?> GetCatalogItem(int id)
+    {
+        var uri = $"{remoteServiceBaseUrl}/{id}";
+        return httpClient.GetFromJsonAsync<Item>(uri);
+    }
+
 }

@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.OutputCaching
 @using Store.Services
 @inject ProductService ProductService
-@inject BasketService BasketService // Inject the BasketService
+@inject BasketService BasketService
 @inject IConfiguration Configuration
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
@@ -27,7 +27,7 @@ else
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
-                <th>Action</th> <!-- Add a new column for the button -->
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -40,7 +40,6 @@ else
                     <td>@product.Price</td>
                     <td>
                         <button class="btn btn-primary" @onclick="() => AddToBasket(product)"> Add to Basket</button>
-
                     </td>
                 </tr>
             }
@@ -50,11 +49,11 @@ else
 
 @code {
     private List<Product>? products;
+
     private string imagePrefix = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
         await Task.Delay(500);
         imagePrefix = Configuration["ImagePrefix"];
         products = await ProductService.GetProducts();
