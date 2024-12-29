@@ -3,6 +3,6 @@
     public static class ItemHelper
     {
         public static string Url(Item item)
-            => $"item/{item.Id}";
+            => $"item/{(item.Id)}";
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Store.WebAppComponents
 {
     public record Item(
-        int Id,
+        Guid Id,
         string Name,
         string Description,
         decimal Price,

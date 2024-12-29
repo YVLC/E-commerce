@@ -40,7 +40,7 @@ public record OrderItem
 {
     [Key]
     public Guid OrderItemId { get; init; } = new Guid();
-    public int Id { get; init; } // Primary key for OrderItem
+    public Guid Id { get; init; } // Primary key for OrderItem
 
     [Required]
     public string ProductName { get; init; } = string.Empty;

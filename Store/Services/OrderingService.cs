@@ -43,7 +43,7 @@
 
     // Refactor the OrderItem to match the response structure
     public record OrderItem(
-        int Id,
+        Guid Id,
         string ProductName,
         decimal UnitPrice,
         int Units,

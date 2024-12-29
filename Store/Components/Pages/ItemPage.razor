@@ -1,4 +1,4 @@
-﻿@page "/item/{itemId:int}"
+﻿@page "/item/{itemId:guid}"
 @using System.Net
 @using Microsoft.AspNetCore.Authorization
 @using Store.Services
@@ -6,7 +6,6 @@
 @inject ProductService CatalogService
 @inject BasketService BasketState
 @inject NavigationManager Nav
-@inject IJSRuntime JsRuntime
 @attribute [Authorize(Roles = "Administrator, User")]
 
 @if (item is not null)
@@ -65,7 +64,7 @@ else if (notFound)
     private bool notFound;
 
     [Parameter]
-    public int ItemId { get; set; }
+    public Guid ItemId { get; set; }
 
     [CascadingParameter]
     public HttpContext? HttpContext { get; set; }
@@ -89,7 +88,6 @@ else if (notFound)
         // Prevent the form from submitting (refreshing the page)
         if (!isLoggedIn)
         {
-            await JsRuntime.InvokeVoidAsync("alert", "You are not logged in. Please log in or register to continue.");
             return;
         }
 

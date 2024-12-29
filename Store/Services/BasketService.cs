@@ -48,7 +48,7 @@ public class BasketService
     }
 
     // Updates the quantity of a specific item in the basket
-    public async Task UpdateQuantityAsync(int productId, int quantity)
+    public async Task UpdateQuantityAsync(Guid productId, int quantity)
     {
         var basket = await GetBasketItemsAsync();
         var item = basket.FirstOrDefault(b => b.ProductId == productId);
@@ -63,7 +63,7 @@ public class BasketService
     }
 
     // Removes an item from the basket
-    public async Task RemoveAsync(int productId)
+    public async Task RemoveAsync(Guid productId)
     {
         var basket = await GetBasketItemsAsync();
         var item = basket.FirstOrDefault(b => b.ProductId == productId);
@@ -99,7 +99,7 @@ public class BasketService
 // BasketItem represents a product added to the basket
 public class BasketItem
 {
-    public int ProductId { get; set; }
+    public Guid ProductId { get; set; }
     public string Name { get; set; }
     public decimal Price { get; set; }
     public int Quantity { get; set; }

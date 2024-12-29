@@ -31,7 +31,7 @@ public class ProductService(HttpClient httpClient)
         return new CatalogResult(items ?? new List<Item>());
     }
 
-    public Task<Item?> GetCatalogItem(int id)
+    public Task<Item?> GetCatalogItem(Guid id)
     {
         var uri = $"{remoteServiceBaseUrl}/{id}";
         return httpClient.GetFromJsonAsync<Item>(uri);

@@ -17,7 +17,7 @@ public static class ProductEndpoints
         .WithName("GetAllProducts")
         .Produces<List<Product>>(StatusCodes.Status200OK);
 
-        group.MapGet("/{id}", async  (int id, ProductDataContext db) =>
+        group.MapGet("/{id}", async  (Guid id, ProductDataContext db) =>
         {
             return await db.Product.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -29,7 +29,7 @@ public static class ProductEndpoints
         .Produces<Product>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
 
-        group.MapPut("/{id}", async  (int id, Product product, ProductDataContext db) =>
+        group.MapPut("/{id}", async  (Guid id, Product product, ProductDataContext db) =>
         {
             var affected = await db.Product
                 .Where(model => model.Id == id)
@@ -56,7 +56,7 @@ public static class ProductEndpoints
         .WithName("CreateProduct")
         .Produces<Product>(StatusCodes.Status201Created);
 
-        group.MapDelete("/{id}", async  (int id, ProductDataContext db) =>
+        group.MapDelete("/{id}", async  (Guid id, ProductDataContext db) =>
         {
             var affected = await db.Product
                 .Where(model => model.Id == id)

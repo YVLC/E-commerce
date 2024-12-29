@@ -5,7 +5,10 @@ namespace DataEntities;
 public class Product
 {
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("userid")]
+    public Guid userId { get; set; }
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }
