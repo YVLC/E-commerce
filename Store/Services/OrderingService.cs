@@ -1,27 +1,48 @@
 ﻿namespace Store.Services
 {
-    public class OrderingService(HttpClient httpClient)
+    public class OrderingService
     {
+        private readonly HttpClient _httpClient;
         private readonly string remoteServiceBaseUrl = "/api/Orders/";
 
-        public Task<OrderRecord[]> GetOrders()
+        // Inject HttpClient via constructor
+        public OrderingService(HttpClient httpClient)
         {
-            return httpClient.GetFromJsonAsync<OrderRecord[]>(remoteServiceBaseUrl)!;
+            _httpClient = httpClient;
         }
 
+        // Get orders with their associated OrderItems
+        public Task<OrderRecord[]> GetOrders()
+        {
+            // Fetch orders with OrderItems using the endpoint we defined previously
+            return _httpClient.GetFromJsonAsync<OrderRecord[]>(remoteServiceBaseUrl)!;
+        }
+
+        // Create a new order (includes OrderItems)
         public Task CreateOrder(OrderRecord request, Guid requestId)
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, remoteServiceBaseUrl);
             requestMessage.Headers.Add("x-requestid", requestId.ToString());
-            requestMessage.Content = JsonContent.Create(request);
-            return httpClient.SendAsync(requestMessage);
+            requestMessage.Content = JsonContent.Create(request); // Serialize the order record
+            return _httpClient.SendAsync(requestMessage);
         }
     }
 
+    // Refactor the OrderRecord to match the full structure, including OrderItems
     public record OrderRecord(
         int OrderNumber,
         DateTime Date,
         string Status,
-        decimal Total);
+        string City,     
+        string Country, 
+        string Street,  
+        decimal Total,
+        OrderItem[] OrderItems);  // Include the list of OrderItems
 
+    // Refactor the OrderItem to match the response structure
+    public record OrderItem(
+        string ProductName,
+        decimal UnitPrice,
+        int Units,
+        string PictureUrl);
 }
