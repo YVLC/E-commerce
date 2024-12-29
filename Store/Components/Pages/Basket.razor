@@ -45,6 +45,13 @@ else
 
     <!-- Place Order Form -->
     <form @formname="checkout" @onsubmit="PlaceOrder" method="post">
+        <div class="form-group">
+            <label>Select Payment Method:</label>
+            <select class="form-control" @bind="selectedPaymentMethod">
+                <option value="Card">Card</option>
+                <option value="PayPal">PayPal</option>
+            </select>
+        </div>
         <AntiforgeryToken />
         <div class="form-group">
             <label for="cardNumber">Card Number:</label>
