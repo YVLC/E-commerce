@@ -7,6 +7,8 @@
 @inject PaymentService PaymentService
 @inject AuthenticationService AuthenticationService
 @attribute [Authorize(Roles = "Administrator, User")]
+@attribute [StreamRendering(true)]
+@rendermode InteractiveServer
 
 <h1>Your Basket</h1>
 
@@ -23,6 +25,7 @@ else
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Total</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -32,22 +35,27 @@ else
                     <td>@item.Name</td>
                     <td>@item.Price.ToString("0.00")</td>
                     <td>@item.Quantity</td>
-                    <td>@(item.Price * item.Quantity)</td>
+                    <td>@(item.Price * item.Quantity).ToString("0.00")</td>
+                    <td>
+                        <!-- Remove button without EditForm -->
+                        <form @formname="@GetFormName(item.ProductId)" method="post" @onsubmit="() => RemoveItem(item.ProductId)">
+                            <AntiforgeryToken />
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3"><strong>Grand Total:</strong></td>
+                <td colspan="4"><strong>Grand Total:</strong></td>
                 <td><strong>@basketItems.Sum(i => i.Price * i.Quantity).ToString("0.00")</strong></td>
             </tr>
         </tfoot>
     </table>
 
-    <!-- Payment Method Selection -->
-
-    <!-- Place Order Form -->
-    <form @formname="checkout" @onsubmit="PlaceOrder" method="post">
+    <!-- Form for placing an order -->
+    <EditForm Model="this" OnValidSubmit="PlaceOrder" FormName="place-order-form">
         <div class="form-group">
             <label>Select Payment Method:</label>
             <select class="form-control" @bind="selectedPaymentMethod">
@@ -55,13 +63,15 @@ else
                 <option value="PayPal">PayPal</option>
             </select>
         </div>
-        <AntiforgeryToken />
-        <div class="form-group">
-            <label for="cardNumber">Card Number:</label>
-            <InputText type="text" class="form-control" id="cardNumber" @bind-Value="cardNumber" placeholder="Enter your card number" />
-        </div>
+        @if (selectedPaymentMethod == "Card")
+        {
+            <div class="form-group">
+                <label for="cardNumber">Card Number:</label>
+                <InputText type="text" class="form-control" id="cardNumber" @bind-Value="cardNumber" />
+            </div>
+        }
         <button type="submit" class="btn btn-primary">Place Order</button>
-    </form>
+    </EditForm>
 
     @if (orderSuccess)
     {
@@ -75,6 +85,8 @@ else
 }
 
 @code {
+    private string GetFormName(Guid productId) => $"deleteBasketItem-{productId}";
+
     private List<BasketItem> basketItems = new();
     private bool orderSuccess = false;
     private string? errorMessage;
@@ -201,5 +213,13 @@ else
         }
 
         return false; // Default fail if no valid payment method selected
+    }
+
+    // Remove the item from the basket
+    private async Task RemoveItem(Guid productId)
+    {
+        await BasketService.RemoveAsync(productId);
+        // Refresh the basket after removal
+        basketItems = await BasketService.GetBasketItemsAsync();
     }
 }
