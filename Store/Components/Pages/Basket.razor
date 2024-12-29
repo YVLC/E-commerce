@@ -9,7 +9,7 @@
 
 @if (basketItems.Count == 0)
 {
-    <p>Your basket is empty.</p>
+    <p>@message</p>
 }
 else
 {
@@ -76,6 +76,7 @@ else
     private bool orderSuccess = false;
     private string? errorMessage;
     private Guid orderNumber = Guid.NewGuid();
+    private string message = "Your basket is empty.";
 
     // Bind directly with @bind for parameters
     private string selectedPaymentMethod = "Card";  // Default selection
@@ -137,6 +138,7 @@ else
                 basketItems.Clear();
                 await BasketService.ClearBasketAsync();
                 orderSuccess = true;
+                message = "successful";
             }
             else
             {
