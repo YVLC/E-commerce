@@ -28,7 +28,7 @@ namespace Ordering.Endpoints
                 // Map the incoming OrderRecord to the Order entity
                 var order = new Order
                 {
-                    OrderNumber = Guid.NewGuid(),  // Generate a new Order ID
+                    OrderNumber = orderRecord.OrderNumber,  // Generate a new Order ID
                     Date = orderRecord.Date,
                     Status = orderRecord.Status,
                     City = orderRecord.City,

@@ -40,7 +40,6 @@ public static class PaymentEndpoints
                   .SetProperty(m => m.paymentstatus, payment.paymentstatus)
                   .SetProperty(m => m.date, payment.date)
                   .SetProperty(m => m.orderid, payment.orderid)
-                  .SetProperty(m => m.transactionid, payment.transactionid)
                 );
 
             return affected == 1 ? Results.Ok() : Results.NotFound();

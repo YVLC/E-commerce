@@ -151,7 +151,11 @@ else
             return await PaymentService.CreatePayment(new Payment
                 {
                     PaymentMethod = "Card",
-                    CardNumber = cardNumber
+                    orderid = orderNumber,
+                    amount = basketItems.Sum(i => i.Price * i.Quantity),
+                    paymentstatus = "pending",
+                    CardNumber = cardNumber,
+                    date = DateTime.UtcNow
                 });
         }
         else if (selectedPaymentMethod == "PayPal")

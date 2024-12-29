@@ -1,7 +1,6 @@
 ﻿using DataEntities;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using System.Data;
 
 namespace Payments.Data;
 
@@ -80,11 +79,12 @@ public static class DbInitializer
         if (await context.Payment.AnyAsync()) // Use async method here
             return;
 
+        Guid temp = Guid.NewGuid();
         Thread.Sleep(300);
         var products = new List<Payment>
         {
-            new Payment { paymentId = new Guid(), amount = 33, date = "24/01/12", orderid = "sassad", PaymentMethod = "Visa", paymentstatus = "successful", transactionid = "sdasd" },
-            new Payment { paymentId = new Guid(), amount = 33, date = "24/01/12", orderid = "sassad", PaymentMethod = "Visa", paymentstatus = "successful", transactionid = "sdasd" },
+            new Payment { paymentId = new Guid(), amount = 33, date = DateTime.UtcNow, orderid = temp, PaymentMethod = "Visa", paymentstatus = "successful"},
+            new Payment { paymentId = new Guid(), amount = 33, date = DateTime.UtcNow, orderid = temp, PaymentMethod = "Visa", paymentstatus = "successful"},
 
         };
         context.AddRange(products);

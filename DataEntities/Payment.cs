@@ -22,7 +22,7 @@ namespace DataEntities
         public Guid paymentId { get; set; }
 
         [JsonPropertyName("orderid")]
-        public string? orderid { get; set; }
+        public Guid orderid { get; set; }
 
         [JsonPropertyName("amount")]
         public decimal amount { get; set; }
@@ -33,14 +33,11 @@ namespace DataEntities
         [JsonPropertyName("paymentstatus")]
         public string? paymentstatus { get; set; }
 
-        [JsonPropertyName("transactionid")]
-        public string? transactionid { get; set; }
-
         [JsonPropertyName("CardNumber")]
         public string? CardNumber { get; set; }
 
         [JsonPropertyName("paymentdate")]
-        public string? date { get; set; }
+        public DateTime date { get; set; }
     }
 
 
