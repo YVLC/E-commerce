@@ -1,5 +1,6 @@
 ﻿@page "/item/{itemId:int}"
 @using System.Net
+@using Microsoft.AspNetCore.Authorization
 @using Store.Services
 @using Store.WebAppComponents
 @using static Store.Services.BasketService
@@ -7,6 +8,7 @@
 @inject BasketService BasketState
 @inject NavigationManager Nav
 @inject IJSRuntime JsRuntime
+@attribute [Authorize(Roles = "Administrator, User")]
 
 @if (item is not null)
 {

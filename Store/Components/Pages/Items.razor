@@ -1,9 +1,11 @@
 ﻿@page "/items"
+@using Microsoft.AspNetCore.Authorization
 @using Store.Services
 @using Store.WebAppComponents
 @inject NavigationManager Nav
 @inject ProductService CatalogService
 @attribute [StreamRendering]
+@attribute [Authorize(Roles = "Administrator, User")]
 
 <PageTitle>AdventureWorks</PageTitle>
 <div class="catalog">
