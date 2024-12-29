@@ -7,7 +7,7 @@ namespace DataEntities;
 public record Order
 {
     [Key]
-    public int OrderNumber { get; init; }
+    public Guid OrderNumber { get; init; }
 
     public DateTime Date { get; init; } = DateTime.UtcNow;
 
@@ -43,10 +43,10 @@ public record OrderItem
     public int Units { get; init; } // Ensures at least 1 unit is ordered
 
     [Column(TypeName = "decimal(18,2)")]
-    public double UnitPrice { get; init; } // Use `decimal` for monetary values to avoid floating-point issues
+    public decimal UnitPrice { get; init; } // Use `decimal` for monetary values to avoid floating-point issues
 
     public string? PictureUrl { get; init; } // Nullable, in case there’s no picture
 
     [ForeignKey(nameof(Order))] // Establishing the relationship
-    public int OrderNumber { get; set; }
+    public Guid OrderNumber { get; set; }
 }

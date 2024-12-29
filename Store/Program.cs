@@ -39,6 +39,13 @@ builder.Services.AddHttpClient<AuthenticationService>(c =>
 }); // Register the LocalStorage service
 builder.Services.AddScoped<BasketService>();
 
+builder.Services.AddHttpClient<OrderingService>(client =>
+{
+    var url = builder.Configuration["OrderEndpoint"]
+              ?? throw new InvalidOperationException("OrderingEndpoint is not set in configuration.");
+    client.BaseAddress = new Uri(url);
+});
+
 builder.Services.AddHttpContextAccessor();
 
 // Register CustomAuthenticationStateProvider

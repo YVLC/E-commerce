@@ -2,6 +2,7 @@
 @using DataEntities
 @using Store.Services
 @inject BasketService BasketService
+@inject OrderingService OrderingService
 
 <h1>Your Basket</h1>
 
@@ -17,6 +18,7 @@ else
                 <th>Name</th>
                 <th>Price</th>
                 <th>Quantity</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
@@ -26,18 +28,83 @@ else
                     <td>@item.Name</td>
                     <td>@item.Price.ToString("0.00")</td>
                     <td>@item.Quantity</td>
+                    <td>@(item.Price * item.Quantity).ToString("0.00")</td>
                 </tr>
             }
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Grand Total:</strong></td>
+                <td><strong>@basketItems.Sum(i => i.Price * i.Quantity).ToString("0.00")</strong></td>
+            </tr>
+        </tfoot>
     </table>
+
+    <!-- Use the form element with onsubmit handler -->
+    <form class="add-to-cart" @formname="placeOrder" @onsubmit="PlaceOrder" method="post">
+        <AntiforgeryToken />
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </form>
+
+    @if (orderSuccess)
+    {
+        <p class="text-success">Order placed successfully!</p>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p class="text-danger">@errorMessage</p>
+    }
 }
 
 @code {
     private List<BasketItem> basketItems = new();
+    private bool orderSuccess = false;
+    private string? errorMessage;
+    private Guid orderNumber = new Guid();
 
     protected override async Task OnInitializedAsync()
     {
-        // Get the basket items asynchronously
         basketItems = await BasketService.GetBasketItemsAsync();
+    }
+
+    private async Task PlaceOrder()
+    {
+        try
+        {
+            orderSuccess = false;
+            errorMessage = null;
+
+            var orderItems = basketItems.Select(item => new Store.Services.OrderItem(
+                Id: item.ProductId,
+                ProductName: item.Name,
+                UnitPrice: item.Price,
+                Units: item.Quantity,
+                PictureUrl: item.PictureUrl
+            )).ToArray();
+
+            var orderRecord = new OrderRecord(
+                OrderNumber: orderNumber,
+                Date: DateTime.UtcNow,
+                Status: "Pending",
+                City: "Sample City",
+                Country: "Sample Country",
+                Street: "Sample Street",
+                Total: basketItems.Sum(i => i.Price * i.Quantity),
+                OrderItems: orderItems
+            );
+
+            var requestId = Guid.NewGuid();
+            await OrderingService.CreateOrder(orderRecord, requestId);
+
+            basketItems.Clear();
+            await BasketService.ClearBasketAsync();
+
+            orderSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to place the order: {ex.Message}";
+        }
     }
 }

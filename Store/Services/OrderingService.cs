@@ -30,7 +30,7 @@
 
     // Refactor the OrderRecord to match the full structure, including OrderItems
     public record OrderRecord(
-        int OrderNumber,
+        Guid OrderNumber,
         DateTime Date,
         string Status,
         string City,     
@@ -41,6 +41,7 @@
 
     // Refactor the OrderItem to match the response structure
     public record OrderItem(
+        int Id,
         string ProductName,
         decimal UnitPrice,
         int Units,

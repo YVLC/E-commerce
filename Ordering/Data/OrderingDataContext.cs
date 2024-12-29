@@ -98,7 +98,7 @@ namespace Ordering.Data
             {
                 new Order
                 {
-                    OrderNumber = 1,
+                    OrderNumber = new Guid(),
                     Date = DateTime.UtcNow, // Store date as UTC
                     Status = "in warehouse",
                     City = "Washington",
@@ -113,7 +113,7 @@ namespace Ordering.Data
                 },
                 new Order
                 {
-                    OrderNumber = 2,
+                    OrderNumber = new Guid(),
                     Date = DateTime.UtcNow, // Store date as UTC
                     Status = "in warehouse",
                     City = "Washington",

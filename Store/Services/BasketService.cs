@@ -83,6 +83,17 @@ public class BasketService
         var basketJson = JsonSerializer.Serialize(basket);
         session.SetString(BasketSessionKey, basketJson);
     }
+
+    public async Task ClearBasketAsync()
+    {
+        if (session == null)
+        {
+            throw new InvalidOperationException("Session is not available.");
+        }
+
+        session.Remove(BasketSessionKey);
+        await Task.CompletedTask;
+    }
 }
 
 // BasketItem represents a product added to the basket
