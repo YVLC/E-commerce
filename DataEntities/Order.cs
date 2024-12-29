@@ -34,6 +34,7 @@ public record Order
 public record OrderItem
 {
     [Key]
+    public Guid OrderItemId { get; init; } = new Guid();
     public int Id { get; init; } // Primary key for OrderItem
 
     [Required]

@@ -25,16 +25,19 @@ namespace DataEntities
         public string? orderid { get; set; }
 
         [JsonPropertyName("amount")]
-        public string? amount { get; set; }
+        public decimal amount { get; set; }
 
         [JsonPropertyName("paymentmethod")]
-        public string? paymentmethod { get; set; }
+        public string? PaymentMethod { get; set; }
 
         [JsonPropertyName("paymentstatus")]
         public string? paymentstatus { get; set; }
 
         [JsonPropertyName("transactionid")]
         public string? transactionid { get; set; }
+
+        [JsonPropertyName("CardNumber")]
+        public string? CardNumber { get; set; }
 
         [JsonPropertyName("paymentdate")]
         public string? date { get; set; }

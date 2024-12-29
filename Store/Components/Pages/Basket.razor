@@ -3,6 +3,7 @@
 @using Store.Services
 @inject BasketService BasketService
 @inject OrderingService OrderingService
+@inject PaymentService PaymentService
 
 <h1>Your Basket</h1>
 
@@ -40,9 +41,15 @@ else
         </tfoot>
     </table>
 
-    <!-- Use the form element with onsubmit handler -->
-    <form class="add-to-cart" @formname="placeOrder" @onsubmit="PlaceOrder" method="post">
+    <!-- Payment Method Selection -->
+
+    <!-- Place Order Form -->
+    <form @formname="checkout" @onsubmit="PlaceOrder" method="post">
         <AntiforgeryToken />
+        <div class="form-group">
+            <label for="cardNumber">Card Number:</label>
+            <InputText type="text" class="form-control" id="cardNumber" @bind-Value="cardNumber" placeholder="Enter your card number" />
+        </div>
         <button type="submit" class="btn btn-primary">Place Order</button>
     </form>
 
@@ -61,10 +68,17 @@ else
     private List<BasketItem> basketItems = new();
     private bool orderSuccess = false;
     private string? errorMessage;
-    private Guid orderNumber = new Guid();
+    private Guid orderNumber = Guid.NewGuid();
+
+    // Bind directly with @bind for parameters
+    private string selectedPaymentMethod = "Card";  // Default selection
+
+    [SupplyParameterFromForm]
+    private string cardNumber { get; set; } = string.Empty;    // Card number for Card payments
 
     protected override async Task OnInitializedAsync()
     {
+        // Example of getting basket items
         basketItems = await BasketService.GetBasketItemsAsync();
     }
 
@@ -72,9 +86,17 @@ else
     {
         try
         {
+            // Validation of card number (if necessary)
+            if (selectedPaymentMethod == "Card" && string.IsNullOrEmpty(cardNumber))
+            {
+                errorMessage = "Please enter a valid card number.";
+                return;
+            }
+
             orderSuccess = false;
             errorMessage = null;
 
+            // Create order items from the basket
             var orderItems = basketItems.Select(item => new Store.Services.OrderItem(
                 Id: item.ProductId,
                 ProductName: item.Name,
@@ -95,16 +117,52 @@ else
             );
 
             var requestId = Guid.NewGuid();
+
+            // Create the order
             await OrderingService.CreateOrder(orderRecord, requestId);
 
-            basketItems.Clear();
-            await BasketService.ClearBasketAsync();
+            // Simulate payment transaction creation based on the selected payment method
+            var paymentResult = await ProcessPayment();
 
-            orderSuccess = true;
+            if (paymentResult)
+            {
+                // Clear the basket after successful order and payment
+                basketItems.Clear();
+                await BasketService.ClearBasketAsync();
+                orderSuccess = true;
+            }
+            else
+            {
+                errorMessage = "Payment failed. Please try again.";
+            }
         }
         catch (Exception ex)
         {
             errorMessage = $"Failed to place the order: {ex.Message}";
         }
+    }
+
+    private async Task<bool> ProcessPayment()
+    {
+        // Simulate payment logic based on selected payment method
+        if (selectedPaymentMethod == "Card")
+        {
+            // Call the PaymentService for card payment
+            return await PaymentService.CreatePayment(new Payment
+                {
+                    PaymentMethod = "Card",
+                    CardNumber = cardNumber
+                });
+        }
+        else if (selectedPaymentMethod == "PayPal")
+        {
+            // Call the PaymentService for PayPal payment
+            return await PaymentService.CreatePayment(new Payment
+                {
+                    PaymentMethod = "PayPal"
+                });
+        }
+
+        return false; // Default fail if no valid payment method selected
     }
 }

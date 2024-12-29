@@ -28,7 +28,7 @@ namespace Ordering.Data
 
             // Configure OrderItem primary key
             modelBuilder.Entity<OrderItem>()
-                .HasKey(oi => oi.Id);
+                .HasKey(oi => oi.OrderItemId);
         }
     }
 

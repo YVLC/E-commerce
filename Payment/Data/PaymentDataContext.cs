@@ -83,8 +83,8 @@ public static class DbInitializer
         Thread.Sleep(300);
         var products = new List<Payment>
         {
-            new Payment { paymentId = new Guid(), amount = "33", date = "24/01/12", orderid = "sassad", paymentmethod = "Visa", paymentstatus = "successful", transactionid = "sdasd" },
-            new Payment { paymentId = new Guid(), amount = "33", date = "24/01/12", orderid = "sassad", paymentmethod = "Visa", paymentstatus = "successful", transactionid = "sdasd" },
+            new Payment { paymentId = new Guid(), amount = 33, date = "24/01/12", orderid = "sassad", PaymentMethod = "Visa", paymentstatus = "successful", transactionid = "sdasd" },
+            new Payment { paymentId = new Guid(), amount = 33, date = "24/01/12", orderid = "sassad", PaymentMethod = "Visa", paymentstatus = "successful", transactionid = "sdasd" },
 
         };
         context.AddRange(products);

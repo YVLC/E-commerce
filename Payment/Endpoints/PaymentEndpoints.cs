@@ -36,7 +36,7 @@ public static class PaymentEndpoints
                 .ExecuteUpdateAsync(setters => setters
                   .SetProperty(m => m.paymentId, payment.paymentId)
                   .SetProperty(m => m.amount, payment.amount)
-                  .SetProperty(m => m.paymentmethod, payment.paymentmethod)
+                  .SetProperty(m => m.PaymentMethod, payment.PaymentMethod)
                   .SetProperty(m => m.paymentstatus, payment.paymentstatus)
                   .SetProperty(m => m.date, payment.date)
                   .SetProperty(m => m.orderid, payment.orderid)
@@ -51,6 +51,7 @@ public static class PaymentEndpoints
 
         group.MapPost("/", async (Payment payment, PaymentDataContext db) =>
         {
+            payment.paymentId = Guid.NewGuid();
             db.Payment.Add(payment);
             await db.SaveChangesAsync();
             return Results.Created($"/api/Payment/{payment.paymentId}",payment);
