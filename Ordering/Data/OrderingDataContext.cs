@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Data;
 
-
 namespace Ordering.Data
-
 {
     public class OrderingDataContext : DbContext
     {
@@ -14,7 +12,24 @@ namespace Ordering.Data
         {
         }
 
-        public DbSet<DataEntities.Order> Orders { get; set; } = default!;
+        public DbSet<Order> Orders { get; set; } = default!;
+        public DbSet<OrderItem> OrderItems { get; set; } = default!; // Explicitly declare DbSet for OrderItems
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure Order and OrderItem relationship
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderItems)
+                .WithOne()
+                .HasForeignKey(oi => oi.OrderNumber)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure OrderItem primary key
+            modelBuilder.Entity<OrderItem>()
+                .HasKey(oi => oi.Id);
+        }
     }
 
     public static class Extensions
@@ -25,8 +40,8 @@ namespace Ordering.Data
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<OrderingDataContext>();
 
-            int maxRetries = 5;   // Maximum number of retries
-            int delay = 1000;     // Initial delay in milliseconds (1 second)
+            int maxRetries = 5; // Maximum number of retries
+            int delay = 1000; // Initial delay in milliseconds (1 second)
 
             for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
@@ -76,48 +91,85 @@ namespace Ordering.Data
     {
         public static async Task Initialize(OrderingDataContext context)
         {
-            // Check if there are any products in the database
-            if (await context.Orders.AnyAsync())
-                return;
+            // Ensure the Orders table is populated with initial data
+            if (await context.Orders.AnyAsync()) return;
 
             var orders = new List<Order>
-{
-    new Order
-    {
-        Date = DateTime.Now,
-        City = "Washington",
-        Country = "USA",
-        Description = null,
-        OrderNumber = 1,
-        Status = "in warehouse",
-        Street = "Street Avenue",
-        Total = 123,
-        OrderItems = new List<Orderitem>
-        {
-            new Orderitem { ProductName = "smth", UnitPrice = 50, Units = 50, PictureUrl = "smth" },
-            new Orderitem { ProductName = "smth2", UnitPrice = 50, Units = 50, PictureUrl = "smth" }
-        }
-    },
-        new Order
-    {
-        Date = DateTime.Now,
-        City = "Washington",
-        Country = "USA",
-        Description = null,
-        OrderNumber = 2,
-        Status = "in warehouse",
-        Street = "Street Avenue",
-        Total = 123,
-        OrderItems = new List<Orderitem>
-        {
-            new Orderitem { ProductName = "smth", UnitPrice = 50, Units = 50, PictureUrl = "smth" },
-            new Orderitem { ProductName = "smth2", UnitPrice = 50, Units = 50, PictureUrl = "smth" }
-        }
-    },
-};
+            {
+                new Order
+                {
+                    OrderNumber = 1,
+                    Date = DateTime.UtcNow, // Store date as UTC
+                    Status = "in warehouse",
+                    City = "Washington",
+                    Country = "USA",
+                    Street = "Street Avenue",
+                    Total = 123,
+                    OrderItems = new List<OrderItem>
+                    {
+                        new OrderItem { ProductName = "smth", UnitPrice = 50, Units = 1, PictureUrl = "smth" },
+                        new OrderItem { ProductName = "smth2", UnitPrice = 50, Units = 2, PictureUrl = "smth2" }
+                    }
+                },
+                new Order
+                {
+                    OrderNumber = 2,
+                    Date = DateTime.UtcNow, // Store date as UTC
+                    Status = "in warehouse",
+                    City = "Washington",
+                    Country = "USA",
+                    Street = "Street Avenue",
+                    Total = 123,
+                    OrderItems = new List<OrderItem>
+                    {
+                        new OrderItem { ProductName = "smth3", UnitPrice = 30, Units = 1, PictureUrl = "smth3" },
+                        new OrderItem { ProductName = "smth4", UnitPrice = 20, Units = 3, PictureUrl = "smth4" }
+                    }
+                },
+            };
 
-            // Add products and save changes asynchronously
-            await context.AddRangeAsync(orders);
+            foreach (var order in orders)
+            {
+                var existingOrder = await context.Orders
+                    .Include(o => o.OrderItems) // Ensure OrderItems are loaded
+                    .FirstOrDefaultAsync(o => o.OrderNumber == order.OrderNumber);
+
+                if (existingOrder == null)
+                {
+                    await context.Orders.AddAsync(order);
+                }
+                else
+                {
+                    // Update the existing order and its related items
+                    context.Entry(existingOrder).CurrentValues.SetValues(order);
+
+                    // Remove existing items not in the new list
+                    foreach (var existingItem in existingOrder.OrderItems.ToList())
+                    {
+                        if (!order.OrderItems.Any(oi => oi.Id == existingItem.Id))
+                        {
+                            context.Entry(existingItem).State = EntityState.Deleted;
+                        }
+                    }
+
+                    // Add or update items in the new list
+                    foreach (var newItem in order.OrderItems)
+                    {
+                        var existingItem = existingOrder.OrderItems
+                            .FirstOrDefault(oi => oi.Id == newItem.Id);
+
+                        if (existingItem == null)
+                        {
+                            existingOrder.OrderItems.Add(newItem); // Add new item
+                        }
+                        else
+                        {
+                            context.Entry(existingItem).CurrentValues.SetValues(newItem); // Update existing item
+                        }
+                    }
+                }
+            }
+
             await context.SaveChangesAsync();
         }
     }
