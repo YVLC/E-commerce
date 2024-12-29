@@ -34,6 +34,8 @@ namespace Ordering.Endpoints
                     City = orderRecord.City,
                     Country = orderRecord.Country,
                     Street = orderRecord.Street,
+                    PostalCode = orderRecord.PostalCode,
+                    ClientId = orderRecord.ClientId,
                     Total = orderRecord.Total
                 };
 

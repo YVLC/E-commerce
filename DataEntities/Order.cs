@@ -25,6 +25,11 @@ public record Order
     [Required]
     public string Country { get; init; } = string.Empty;
 
+    [Required]
+    public string PostalCode { get; init; } = string.Empty;
+    [Required]
+    public Guid ClientId { get; init; } 
+
     public List<OrderItem> OrderItems { get; set; } = new(); // Updated to use `OrderItem`
 
     [Column(TypeName = "decimal(18,2)")]

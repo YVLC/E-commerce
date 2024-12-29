@@ -35,7 +35,9 @@
         string Status,
         string City,     
         string Country, 
-        string Street,  
+        string Street,
+        string PostalCode,
+        Guid ClientId,
         decimal Total,
         OrderItem[] OrderItems);  // Include the list of OrderItems
 

@@ -81,8 +81,8 @@ public static class DbInitializer
         Thread.Sleep(300);
         var products = new List<DataEntities.Authentication>
         {
-            new DataEntities.Authentication { userid = new Guid(), email = "33", password = "1234", firstname = "sassad", username = "Visa", lastname = "successful", phone_number = "sdasd", address = "s", postcode= "312", role = "Administrator"},
-            new DataEntities.Authentication { userid = new Guid(), email = "3423", password = "1234", firstname = "sassad", username = "Visa", lastname = "successful", phone_number = "sdasd", address ="ss", postcode="3213", role = "User" },
+            new DataEntities.Authentication { userid = new Guid(), email = "33", password = "1234", firstname = "sassad", username = "Visa", lastname = "successful", phone_number = "sdasd", city = "Somthing", country= "somthing", address = "s", postcode= "312", role = "Administrator"},
+            new DataEntities.Authentication { userid = new Guid(), email = "3423", password = "1234", firstname = "sassad", username = "Visa", lastname = "successful", phone_number = "sdasd", city = "Somthing", country= "somthing",  address ="ss", postcode="3213", role = "User" },
 
         };
         context.AddRange(products);

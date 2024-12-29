@@ -37,6 +37,12 @@ namespace DataEntities
         [JsonPropertyName("phone_number")]
         public string? phone_number{ get; set; }
 
+        [JsonPropertyName("city")]
+        public string city { get; set; }
+
+        [JsonPropertyName("country")]
+        public string country { get; set; }
+
         [JsonPropertyName("address")]
         public string address { get; set; }
 

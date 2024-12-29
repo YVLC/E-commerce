@@ -50,10 +50,9 @@
             if (isSuccess != null)
             {
                 // Sign in using the CustomAuthenticationStateProvider
-                await AuthStateProvider.SignInAsync(model.Email, isSuccess); // Pass the role directly
+                await AuthStateProvider.SignInAsync(model.Email, isSuccess.Role, isSuccess.UserId.ToString()); // Pass the role directly
 
                 if (!loading) return; // Prevent navigation if the task is already completed
-                await InvokeAsync(() => NavigationManager.NavigateTo("/"));
             }
             else
             {

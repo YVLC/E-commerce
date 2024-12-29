@@ -30,12 +30,13 @@ namespace Store.Services
             return new AuthenticationState(user);
         }
 
-        public async Task SignInAsync(string email, string role)
+        public async Task SignInAsync(string email, string role, string userId)
         {
             var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, email),
-            new Claim(ClaimTypes.Role, role)
+            new Claim(ClaimTypes.Role, role),
+            new Claim(ClaimTypes.NameIdentifier, userId)
         };
 
             var identity = new ClaimsIdentity(claims, "Custom authentication");

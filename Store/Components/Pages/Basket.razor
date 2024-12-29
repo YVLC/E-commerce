@@ -1,9 +1,12 @@
 ﻿@page "/basket"
 @using DataEntities
+@using Microsoft.AspNetCore.Authorization
 @using Store.Services
 @inject BasketService BasketService
 @inject OrderingService OrderingService
 @inject PaymentService PaymentService
+@inject AuthenticationService AuthenticationService
+@attribute [Authorize(Roles = "Administrator, User")]
 
 <h1>Your Basket</h1>
 
@@ -113,36 +116,57 @@ else
                 PictureUrl: item.PictureUrl
             )).ToArray();
 
-            var orderRecord = new OrderRecord(
-                OrderNumber: orderNumber,
-                Date: DateTime.UtcNow,
-                Status: "Pending",
-                City: "Sample City",
-                Country: "Sample Country",
-                Street: "Sample Street",
-                Total: basketItems.Sum(i => i.Price * i.Quantity),
-                OrderItems: orderItems
-            );
+            var userIdString = await AuthenticationService.GetUserIdAsync();
 
-            var requestId = Guid.NewGuid();
-
-            // Create the order
-            await OrderingService.CreateOrder(orderRecord, requestId);
-
-            // Simulate payment transaction creation based on the selected payment method
-            var paymentResult = await ProcessPayment();
-
-            if (paymentResult)
+            if (Guid.TryParse(userIdString, out var userId))
             {
-                // Clear the basket after successful order and payment
-                basketItems.Clear();
-                await BasketService.ClearBasketAsync();
-                orderSuccess = true;
-                message = "successful";
+                var user = await AuthenticationService.GetUserByIdAsync(userId);
+
+                if (user != null)
+                {
+                    var orderRecord = new OrderRecord(
+                    OrderNumber: orderNumber,
+                    Date: DateTime.UtcNow,
+                    Status: "Pending",
+                    City: user.city,
+                    Country: user.country,
+                    Street: user.address,
+                    PostalCode: user.postcode,
+                    ClientId: user.userid,
+                    Total: basketItems.Sum(i => i.Price * i.Quantity),
+                    OrderItems: orderItems
+                     );
+
+                    var requestId = Guid.NewGuid();
+
+                    // Create the order
+                    await OrderingService.CreateOrder(orderRecord, requestId);
+
+                    // Simulate payment transaction creation based on the selected payment method
+                    var paymentResult = await ProcessPayment();
+
+                    if (paymentResult)
+                    {
+                        // Clear the basket after successful order and payment
+                        basketItems.Clear();
+                        await BasketService.ClearBasketAsync();
+                        orderSuccess = true;
+                        message = "successful";
+                    }
+                    else
+                    {
+                        errorMessage = "Payment failed. Please try again.";
+                    }
+                    Console.WriteLine($"User found: {user.username} ({user.email})");
+                }
+                else
+                {
+                    Console.WriteLine("User not found or an error occurred.");
+                }
             }
             else
             {
-                errorMessage = "Payment failed. Please try again.";
+                Console.WriteLine("Invalid user ID.");
             }
         }
         catch (Exception ex)
