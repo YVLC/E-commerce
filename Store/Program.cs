@@ -11,6 +11,14 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+builder.Services.AddDistributedMemoryCache(); // Required for session state
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.Cookie.HttpOnly = true; // Security setting
+    options.Cookie.IsEssential = true; // Required for compliance
+});
+
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddHttpClient<ProductService>(c =>
 {
@@ -68,6 +76,7 @@ app.Use(async (context, next) =>
 });
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 app.UseAntiforgery();
 app.MapDefaultEndpoints();  // If this method is mapping conflicting routes, consider removing or modifying it.
 
