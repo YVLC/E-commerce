@@ -28,7 +28,7 @@ builder.Services.AddHttpClient<AuthenticationService>(c =>
 {
     var url = builder.Configuration["AuthenticationEndpoint"] ?? throw new InvalidOperationException("Authentication is not set");
     c.BaseAddress = new(url);
-});
+}); // Register the LocalStorage service
 builder.Services.AddScoped<BasketService>();
 
 builder.Services.AddHttpContextAccessor();

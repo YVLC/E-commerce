@@ -2,9 +2,11 @@
 @using System.Net
 @using Store.Services
 @using Store.WebAppComponents
+@using static Store.Services.BasketService
 @inject ProductService CatalogService
 @inject BasketService BasketState
 @inject NavigationManager Nav
+@inject IJSRuntime JsRuntime
 
 @if (item is not null)
 {
@@ -13,7 +15,8 @@
     <div class="item-details">
         <div class="description">
             <p>@item.Description</p>
-            <form class="add-to-cart" method="post" @formname="add-to-cart" data-enhance="@isLoggedIn">
+            <!-- Add the @formname attribute -->
+            <form class="add-to-cart" @formname="addToCartForm" method="post" @onsubmit="HandleAddToCart">
                 <AntiforgeryToken />
                 <span class="price">$@item.Price.ToString("0.00")</span>
 
@@ -42,7 +45,7 @@
 
             @if (numInCart > 0)
             {
-                <p><strong>@numInCart</strong> in <a href="cart">shopping bag</a></p>
+                <p><strong>@numInCart</strong> in <a href="basket">shopping bag</a></p>
             }
         </div>
     </div>
@@ -80,4 +83,40 @@ else if (notFound)
         }
     }
 
+    private async Task HandleAddToCart()
+    {
+        // Prevent the form from submitting (refreshing the page)
+        if (!isLoggedIn)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "You are not logged in. Please log in or register to continue.");
+            return;
+        }
+
+        if (item is not null)
+        {
+            // Map the Item to BasketItem and add it to the basket
+            var basketItem = MapItemToBasketItem(item);
+            await BasketState.AddAsync(basketItem);
+            await UpdateNumInCartAsync();
+        }
+    }
+
+    private BasketItem MapItemToBasketItem(Item item)
+    {
+        // Map Item to BasketItem
+        return new BasketItem
+        {
+            ProductId = item.Id,
+            Name = item.Name,
+            Price = item.Price,
+            Quantity = 1, // Default to 1, you can change if needed
+            PictureUrl = item.PictureUrl
+        };
+    }
+
+    private async Task UpdateNumInCartAsync()
+    {
+        var items = await BasketState.GetBasketItemsAsync();
+        numInCart = items.FirstOrDefault(row => row.ProductId == ItemId)?.Quantity ?? 0;
+    }
 }

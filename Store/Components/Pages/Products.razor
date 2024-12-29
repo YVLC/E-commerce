@@ -55,12 +55,4 @@ else
         imagePrefix = Configuration["ImagePrefix"];
         products = await ProductService.GetProducts();
     }
-
-    // Method to add the selected product to the basket
-    async Task AddToBasket(Product product)
-    {
-        // Call the BasketService to add the product to the basket
-        BasketService.AddToBasket(product);
-        Console.WriteLine($"{product.Name} added to basket.");
-    }
 }

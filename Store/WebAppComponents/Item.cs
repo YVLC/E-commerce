@@ -4,6 +4,7 @@
         int Id,
         string Name,
         string Description,
-        decimal Price);
+        decimal Price,
+        string PictureUrl);
     public record CatalogResult(List<Item> Data);
 }

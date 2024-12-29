@@ -1,6 +1,7 @@
 ﻿@page "/basket"
 @using DataEntities
 @using Store.Services
+@using static Store.Services.BasketService
 @inject BasketService BasketService
 
 <h1>Your Basket</h1>
@@ -15,8 +16,8 @@ else
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Description</th>
                 <th>Price</th>
+                <th>Quantity</th>
             </tr>
         </thead>
         <tbody>
@@ -24,8 +25,8 @@ else
             {
                 <tr>
                     <td>@item.Name</td>
-                    <td>@item.Description</td>
-                    <td>@item.Price</td>
+                    <td>@item.Price.ToString("0.00")</td>
+                    <td>@item.Quantity</td>
                 </tr>
             }
         </tbody>
@@ -33,10 +34,11 @@ else
 }
 
 @code {
-    private List<Product> basketItems = new();
+    private List<BasketItem> basketItems = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        basketItems = BasketService.GetBasket();
+        // Get the basket items asynchronously
+        basketItems = await BasketService.GetBasketItemsAsync();
     }
 }
