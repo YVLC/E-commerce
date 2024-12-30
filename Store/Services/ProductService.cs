@@ -28,7 +28,7 @@ public class ProductService(HttpClient httpClient)
     public async Task<List<Product>> GetProductsByUserId(Guid id)
     {
         List<Product>? products = null;
-        var response = await httpClient.GetAsync($"/api/Product/{id}");
+        var response = await httpClient.GetAsync($"/api/Product/user/{id}");
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions
