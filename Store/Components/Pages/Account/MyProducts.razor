@@ -13,14 +13,17 @@
 @using Store.WebAppComponents
 @inject ProductService CatalogService
 
-<h1>Products</h1>
+<h1>My Products</h1>
 
-<p>Here are some of our amazing outdoor products that you can purchase.</p>
+<p>Here are some of our amazing products that you want to sell</p>
 
-@if (products == null)
-{
-    <p><em>Loading...</em></p>
-}
+@if (products.Count == 0)
+
+    {
+        <p><em>You do not have any products that you want to sell</em></p>
+        <a href="/add-product">Click here to add a product to the store</a>
+    }
+
 else
 {
     <table class="table">
@@ -50,7 +53,7 @@ else
 @code {
     [CascadingParameter]
     public HttpContext HttpContext { get; set; }
-    private List<Product>? products;
+    private List<Product>? products = new List<Product>();
 
     protected override async Task OnInitializedAsync()
     {

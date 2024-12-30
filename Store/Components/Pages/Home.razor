@@ -1,5 +1,14 @@
 ﻿@page "/"
-
+@using DataEntities
+@using Microsoft.AspNetCore.OutputCaching
+@using Store.Services
+@inject ProductService ProductService
+@inject BasketService BasketService
+@inject IConfiguration Configuration
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@rendermode InteractiveServer
 <PageTitle>Home</PageTitle>
 
 <div class="row">
@@ -22,3 +31,45 @@
         </div>
     </div>
 </div>
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td><img height="80" width="80" src="https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/@product.ImageUrl" /></td>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Product>? products;
+
+    private string imagePrefix = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        imagePrefix = Configuration["ImagePrefix"];
+        products = await ProductService.GetProducts();
+    }
+}
