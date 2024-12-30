@@ -7,25 +7,25 @@ public class Product
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
 
-    [JsonPropertyName("userid")]
-    public Guid userId { get; set; }
+    [JsonPropertyName("Userid")]
+    public Guid UserId { get; set; }
 
-    [JsonPropertyName("name")]
+    [JsonPropertyName("Name")]
     public string? Name { get; set; }
 
-    [JsonPropertyName("description")]
+    [JsonPropertyName("Description")]
     public string? Description { get; set; }
 
-    [JsonPropertyName("price")]
+    [JsonPropertyName("Price")]
     public decimal Price { get; set; }
 
-    [JsonPropertyName("imageUrl")]
+    [JsonPropertyName("ImageUrl")]
     public string? ImageUrl { get; set; }
 
-    [JsonPropertyName("tag")]
+    [JsonPropertyName("Tag")]
     public string? Tag { get; set; }
 
-    [JsonPropertyName("type")]
+    [JsonPropertyName("Type")]
     public string? Type { get; set; }
 }
 

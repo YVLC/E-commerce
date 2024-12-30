@@ -1,0 +1,102 @@
+﻿@page "/add-product"
+@using DataEntities
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Store.Services
+@inject Store.Services.AuthenticationService AuthenticationService
+@inject ProductService CatalogService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Administrator, User")]
+@inject NavigationManager NavigationManager
+
+<div class="card">
+    <h4 class="card-header">Register</h4>
+    <div class="card-body">
+        <EditForm Model="@model" OnValidSubmit="OnSubmit" FormName="addProduct">
+
+            <div class="form-group">
+                <label>Name</label>
+                <InputText @bind-Value="model.Name" class="form-control" />
+                <ValidationMessage For="@(() => model.Name)" />
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <InputText @bind-Value="model.Description" class="form-control" />
+                <ValidationMessage For="@(() => model.Description)" />
+            </div>
+
+            <div class="form-group">
+                <label>Price</label>
+                <InputNumber @bind-Value="model.Price" class="form-control" />
+                <ValidationMessage For="@(() => model.Price)" />
+            </div>
+
+            <div class="form-group">
+                <label>Image URL</label>
+                <InputText @bind-Value="model.ImageUrl" class="form-control" />
+                <ValidationMessage For="@(() => model.ImageUrl)" />
+            </div>
+
+            <div class="form-group">
+                <label>Tag</label>
+                <InputText @bind-Value="model.Tag" class="form-control" />
+                <ValidationMessage For="@(() => model.Tag)" />
+            </div>
+
+            <div class="form-group">
+                <label>Type</label>
+                <InputText @bind-Value="model.Type" class="form-control" />
+                <ValidationMessage For="@(() => model.Type)" />
+            </div>
+
+            <button type="submit" disabled="@loading" class="btn btn-primary">
+                @if (loading)
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Add Product
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    private Product model { get; set; } = new();
+    private bool loading;
+
+    private async Task OnSubmit()
+    {
+        loading = true;
+        try
+        {
+            var userIdString = await AuthenticationService.GetUserIdAsync();
+
+            Guid.TryParse(userIdString, out var userId);
+
+            model.UserId = userId;
+            var isSuccess = await CatalogService.CreateProductAsync(model);
+            if (isSuccess)
+            {
+                await Task.Delay(1);
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                // Handle failed registration (e.g., show a message)
+                Console.WriteLine("Adding Product failed.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            loading = false; // Reset loading state after processing
+            StateHasChanged(); // Update the UI
+        }
+    }
+}

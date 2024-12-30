@@ -34,7 +34,7 @@ public static class ProductEndpoints
             // Fetch the products based on the userId
             var products = await db.Product
                 .AsNoTracking()  // This ensures the query does not track the entities in the change tracker for performance reasons.
-                .Where(p => p.userId == userId)  // Filter products by the UserId
+                .Where(p => p.UserId == userId)  // Filter products by the UserId
                 .ToListAsync();
 
             return products.Any()
@@ -65,12 +65,35 @@ public static class ProductEndpoints
 
         group.MapPost("/", async (Product product, ProductDataContext db) =>
         {
-            db.Product.Add(product);
-            await db.SaveChangesAsync();
-            return Results.Created($"/api/Product/{product.Id}",product);
+            try
+            {
+                var products = new Product
+                {
+                    Description = product.Description,
+                    Price = product.Price,
+                    ImageUrl = product.ImageUrl,
+                    Id = product.Id,
+                    Name = product.Name,
+                    Tag = product.Tag,
+                    Type = product.Type,
+                    UserId = product.UserId
+                };
+                db.Product.Add(products);
+                await db.SaveChangesAsync();
+
+                // Return a successful response with a 201 Created status
+                return Results.Created($"/api/Product/{product.Id}", product);
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected errors and return a 500 Internal Server Error
+                return Results.Problem($"An error occurred while creating the product: {ex.Message}", statusCode: 500);
+            }
         })
         .WithName("CreateProduct")
-        .Produces<Product>(StatusCodes.Status201Created);
+        .Produces<Product>(StatusCodes.Status201Created)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status500InternalServerError);
 
         group.MapDelete("/{id}", async  (Guid id, ProductDataContext db) =>
         {

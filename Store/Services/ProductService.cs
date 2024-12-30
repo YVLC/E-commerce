@@ -54,4 +54,21 @@ public class ProductService(HttpClient httpClient)
         return httpClient.GetFromJsonAsync<Item>(uri);
     }
 
+    public async Task<bool> CreateProductAsync(Product product)
+    {
+        // Generate a new GUID for the Product (if necessary)
+        product.Id = Guid.NewGuid(); // Ensure the Product gets a unique ID
+
+        var productJson = JsonSerializer.Serialize(product);
+        Console.WriteLine($"Serialized Product: {productJson}");
+
+        var response = await httpClient.PostAsJsonAsync($"{remoteServiceBaseUrl}", product);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return true; // Successfully created the product
+        }
+
+        return false; // Failed to create the product
+    }
 }
