@@ -1,0 +1,68 @@
+﻿@page "/my-products"
+@using DataEntities
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Store.Services
+@inject Store.Services.AuthenticationService AuthenticationService
+@inject IConfiguration Configuration
+@attribute [StreamRendering(true)]
+@inject NavigationManager NavigationManager
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@rendermode InteractiveServer
+@using System.Text.Json
+@using Store.WebAppComponents
+@inject ProductService CatalogService
+
+<h1>Products</h1>
+
+<p>Here are some of our amazing outdoor products that you can purchase.</p>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td><img height="80" width="80" src="https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/@product.ImageUrl" /></td>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; }
+    private List<Product>? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userIdString = await AuthenticationService.GetUserIdAsync();
+
+        if (Guid.TryParse(userIdString, out var userId))
+        {
+            products = await CatalogService.GetProductsByUserId(userId);
+        }
+        else
+        {
+            Console.WriteLine("User not found or an error occurred.");
+        }
+    }
+}
