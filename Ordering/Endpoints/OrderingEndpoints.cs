@@ -23,6 +23,19 @@ namespace Ordering.Endpoints
             .WithName("GetAllOrders")  // Changed name to better reflect the purpose
             .Produces<List<DataEntities.Order>>(StatusCodes.Status200OK);
 
+            group.MapGet("/{userId}", async (OrderingDataContext db, Guid userId) =>
+            {
+
+                var orders = await db.Orders
+                    .Include(o => o.OrderItems)  
+                    .Where(o => o.ClientId == userId)
+                    .ToListAsync();
+
+                return Results.Ok(orders); // 
+            })
+            .WithName("GetAllOrdersByUserId")  // Changed name to better reflect the purpose
+            .Produces<List<DataEntities.Order>>(StatusCodes.Status200OK);
+
             group.MapPost("/", async (OrderingDataContext db, OrderRecord orderRecord) =>
             {
                 // Map the incoming OrderRecord to the Order entity

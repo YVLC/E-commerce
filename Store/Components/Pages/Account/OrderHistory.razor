@@ -1,0 +1,106 @@
+﻿@page "/history"
+@using DataEntities
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Store.Services
+@inject Store.Services.AuthenticationService AuthenticationService
+@inject OrderingService OrderingService
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Administrator, User")]
+
+@if (orders == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <form @onsubmit="() => ShowOrderItems(order.OrderNumber)">
+                <tr>
+                    <td>@order.OrderNumber</td>
+                    <td>@order.Date.ToString("MM/dd/yyyy")</td>
+                    <td>@order.Status</td>
+                    <td>@order.Total.ToString("C")</td>
+                    <td>
+                        <!-- The button is inside the form, and on click, the form is submitted -->
+                        <button type="submit" class="btn btn-info">View Items</button>
+                    </td>
+                </tr>
+                </form>
+
+                @if (selectedOrder == order.OrderNumber)
+                {
+                    <tr>
+                        <td colspan="5">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Image</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in order.OrderItems)
+                                    {
+                                        <tr>
+                                            <td>@item.ProductName</td>
+                                            <td>@item.UnitPrice.ToString("C")</td>
+                                            <td>@item.Units</td>
+                                            <td>@(item.UnitPrice * item.Units).ToString("C")</td>
+                                            <td>
+                                                <img src="@item.PictureUrl" alt="@item.ProductName" height="80" width="80" />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; }
+    private OrderRecord[] orders;
+    private Guid selectedOrder;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userIdString = await AuthenticationService.GetUserIdAsync();
+
+        if (Guid.TryParse(userIdString, out var userId))
+        {
+            orders = await OrderingService.GetOrdersByUserId(userId);
+        }
+        else
+        {
+            Console.WriteLine("User not found or an error occurred.");
+        }
+    }
+
+    private void ShowOrderItems(Guid orderNumber)
+    {
+        // Toggle the order view (show items for the selected order)
+        selectedOrder = selectedOrder == orderNumber ? Guid.Empty : orderNumber;
+    }
+}

@@ -18,6 +18,12 @@
             return _httpClient.GetFromJsonAsync<OrderRecord[]>(remoteServiceBaseUrl)!;
         }
 
+        public Task<OrderRecord[]> GetOrdersByUserId(Guid userId)
+        {
+            // Fetch orders with OrderItems using the endpoint we defined previously
+            return _httpClient.GetFromJsonAsync<OrderRecord[]>($"/api/Orders/{userId}")!;
+        }
+
         // Create a new order (includes OrderItems)
         public Task CreateOrder(OrderRecord request, Guid requestId)
         {
