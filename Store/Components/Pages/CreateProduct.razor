@@ -10,6 +10,15 @@
 @inject NavigationManager NavigationManager
 
 <div class="card">
+    @if (isSuccess)
+    {
+        <div class="text-center">
+            <img src="/images/successs.png" alt="Success" style="width: 100px; height: 100px;" />
+            <p class="text-success">Product added successfully!</p>
+            <a href="/my-products" class="btn btn-success mt-3">Go to My Products</a>
+        </div>
+    }
+    else{
     <h4 class="card-header">Register</h4>
     <div class="card-body">
         <EditForm Model="@model" OnValidSubmit="OnSubmit" FormName="addProduct">
@@ -59,6 +68,7 @@
             </button>
         </EditForm>
     </div>
+    }
 </div>
 
 @code {
@@ -66,6 +76,7 @@
     [SupplyParameterFromForm]
     private Product model { get; set; } = new();
     private bool loading;
+    private bool isSuccess;
 
     private async Task OnSubmit()
     {
@@ -77,11 +88,11 @@
             Guid.TryParse(userIdString, out var userId);
 
             model.UserId = userId;
-            var isSuccess = await CatalogService.CreateProductAsync(model);
+            isSuccess = await CatalogService.CreateProductAsync(model);
             if (isSuccess)
             {
-                await Task.Delay(1);
-                NavigationManager.NavigateTo("/");
+                loading = false; // Reset loading state after processing
+                StateHasChanged(); // Update the UI
             }
             else
             {
@@ -92,11 +103,6 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
-        }
-        finally
-        {
-            loading = false; // Reset loading state after processing
-            StateHasChanged(); // Update the UI
         }
     }
 }

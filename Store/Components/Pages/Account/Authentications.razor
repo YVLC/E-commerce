@@ -9,6 +9,15 @@
 @using System.Security.Claims
 
 <div class="card">
+    @if (isSuccessRedirect)
+    {
+        <div class="text-center">
+            <img src="/images/successs.png" alt="Success" style="width: 100px; height: 100px;" />
+            <p class="text-success">Product added successfully!</p>
+            <a href="/" class="btn btn-success mt-3">Go to Main Page</a>
+        </div>
+    }
+    else{
     <h4 class="card-header">Login</h4>
     <div class="card-body">
         <EditForm Model="@model" OnValidSubmit="OnSubmit" FormName="login">
@@ -31,6 +40,7 @@
             <NavLink href="/register" class="btn btn-link">Register</NavLink>
         </EditForm>
     </div>
+    }
 </div>
 
 @code {
@@ -39,6 +49,7 @@
     [SupplyParameterFromForm]
     private Models.Login model { get; set; } = new();
     private bool loading;
+    private bool isSuccessRedirect = false;
 
     private async Task OnSubmit()
     {
@@ -52,7 +63,9 @@
                 // Sign in using the CustomAuthenticationStateProvider
                 await AuthStateProvider.SignInAsync(model.Email, isSuccess.Role, isSuccess.UserId.ToString()); // Pass the role directly
 
-                if (!loading) return; // Prevent navigation if the task is already completed
+                isSuccessRedirect = true;
+                loading = false; // Reset loading state after processing
+                StateHasChanged(); // Update the UI
             }
             else
             {
@@ -63,11 +76,6 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
-        }
-        finally
-        {
-            loading = false; // Reset loading state after processing
-            StateHasChanged(); // Update the UI
         }
     }
 }
