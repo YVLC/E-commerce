@@ -7,65 +7,86 @@
 @inject NavigationManager NavigationManager
 
 <div class="card">
-    <h4 class="card-header">Register</h4>
-    <div class="card-body">
-        <EditForm Model="@model" OnValidSubmit="OnSubmit" FormName="register">
+    @if (isSuccessRedirect)
+    {
+        <div class="text-center">
+            <img src="/images/successs.png" alt="Success" style="width: 100px; height: 100px;" />
+            <p class="text-success">Account created</p>
+            <a href="/" class="btn btn-success mt-3">Go to Main Page</a>
+        </div>
+    }
+    else
+    {
+        <h4 class="card-header">Register</h4>
+        <div class="card-body">
+            <EditForm Model="@model" OnValidSubmit="OnSubmit" FormName="register">
 
-            <div class="form-group">
-                <label>Email</label>
-                <InputText @bind-Value="model.Email" class="form-control" />
-                <ValidationMessage For="@(() => model.Email)" />
-            </div>
-            <div class="form-group">
-                <label>Username</label>
-                <InputText @bind-Value="model.Username" class="form-control" />
-                <ValidationMessage For="@(() => model.Username)" />
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <InputText @bind-Value="model.Password" type="password" class="form-control" />
-                <ValidationMessage For="@(() => model.Password)" />
-            </div>
-            <div class="form-group">
-                <label>Repeat Password</label>
-                <InputText @bind-Value="model.RepeatPassword" type="password" class="form-control" />
-                <ValidationMessage For="@(() => model.RepeatPassword)" />
-            </div>
-            <div class="form-group">
-                <label>First Name</label>
-                <InputText @bind-Value="model.Firstname" class="form-control" />
-                <ValidationMessage For="@(() => model.Firstname)" />
-            </div>
-            <div class="form-group">
-                <label>Last Name</label>
-                <InputText @bind-Value="model.Lastname" class="form-control" />
-                <ValidationMessage For="@(() => model.Lastname)" />
-            </div>
-            <div class="form-group">
-                <label>Phone Number</label>
-                <InputText @bind-Value="model.Phone_number" class="form-control" />
-                <ValidationMessage For="@(() => model.Phone_number)" />
-            </div>
-            <div class="form-group">
-                <label>Address</label>
-                <InputText @bind-Value="model.Address" class="form-control" />
-                <ValidationMessage For="@(() => model.Address)" />
-            </div>
-            <div class="form-group">
-                <label>Postcode</label>
-                <InputText @bind-Value="model.Postcode" class="form-control" />
-                <ValidationMessage For="@(() => model.Postcode)" />
-            </div>
-            <button type="submit" disabled="@loading" class="btn btn-primary">
-                @if (loading)
-                {
-                    <span class="spinner-border spinner-border-sm mr-1"></span>
-                }
-                Register
+                <div class="form-group">
+                    <label>Email</label>
+                    <InputText @bind-Value="model.Email" class="form-control" />
+                    <ValidationMessage For="@(() => model.Email)" />
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="model.Username" class="form-control" />
+                    <ValidationMessage For="@(() => model.Username)" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <InputText @bind-Value="model.Password" type="password" class="form-control" />
+                    <ValidationMessage For="@(() => model.Password)" />
+                </div>
+                <div class="form-group">
+                    <label>Repeat Password</label>
+                    <InputText @bind-Value="model.RepeatPassword" type="password" class="form-control" />
+                    <ValidationMessage For="@(() => model.RepeatPassword)" />
+                </div>
+                <div class="form-group">
+                    <label>First Name</label>
+                    <InputText @bind-Value="model.Firstname" class="form-control" />
+                    <ValidationMessage For="@(() => model.Firstname)" />
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <InputText @bind-Value="model.Lastname" class="form-control" />
+                    <ValidationMessage For="@(() => model.Lastname)" />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <InputText @bind-Value="model.Phone_number" class="form-control" />
+                    <ValidationMessage For="@(() => model.Phone_number)" />
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <InputText @bind-Value="model.City" class="form-control" />
+                    <ValidationMessage For="@(() => model.City)" />
+                </div>
+                <div class="form-group">
+                    <label>Country</label>
+                    <InputText @bind-Value="model.Country" class="form-control" />
+                    <ValidationMessage For="@(() => model.Country)" />
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <InputText @bind-Value="model.Address" class="form-control" />
+                    <ValidationMessage For="@(() => model.Address)" />
+                </div>
+                <div class="form-group">
+                    <label>Postcode</label>
+                    <InputText @bind-Value="model.Postcode" class="form-control" />
+                    <ValidationMessage For="@(() => model.Postcode)" />
+                </div>
+                <button type="submit" disabled="@loading" class="btn btn-primary">
+                    @if (loading)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Register
             </button>
             <NavLink href="/login" class="btn btn-link">Login</NavLink>
         </EditForm>
     </div>
+    }
 </div>
 
 @code {
@@ -74,16 +95,18 @@
     private Models.Register model { get; set; } = new();
     private bool loading;
 
+    private bool isSuccessRedirect = false;
+
     private async Task OnSubmit()
     {
         loading = true; // Set loading state to true immediately after starting the submission
         try
         {
             // Call the registration method and wait for the result
-            var isSuccess = await AuthenticationService.Register(model.Email, model.Password, model.Username, model.Firstname, model.Lastname, model.Phone_number, model.Address, model.Postcode);
+            var isSuccess = await AuthenticationService.Register(model.Email, model.Password, model.Username, model.Firstname, model.Lastname, model.Phone_number, model.City, model.Country, model.Address, model.Postcode);
             if (isSuccess)
             {
-                NavigationManager.NavigateTo("/login");
+                isSuccessRedirect = true;
             }
             else
             {

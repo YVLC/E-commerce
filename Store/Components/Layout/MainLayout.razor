@@ -9,12 +9,12 @@
         <div class="top-row px-4">
             <!-- Links Section: About, My Products, Payment History -->
             <div class="top-links">
-                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
                 <AuthorizeView>
                     <NotAuthorized>
                         <a href="/login">Login</a>
                     </NotAuthorized>
                     <Authorized>
+                        <a href="/account" target="_blank">Account</a>
                         <a href="/my-products">My Products</a>
                         <a href="/history">Payment History</a>
                         <a href="/logout">Logout</a>

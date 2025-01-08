@@ -58,7 +58,7 @@ public class AuthenticationService
         // Return null if no match is found or if response fails
         return null;
     }
-    public async Task<bool> Register(string email, string password, string username, string firstname, string lastname, string? phonenumber, string address, string postcode)
+    public async Task<bool> Register(string email, string password, string username, string firstname, string lastname, string phonenumber, string city, string country, string address, string postcode)
     {
         List<Authentication>? authentications = null;
 
@@ -87,17 +87,18 @@ public class AuthenticationService
                 firstname = firstname,
                 lastname = lastname,
                 phone_number = phonenumber,
+                city = city,
+                country = country,
                 address = address,
-                postcode = postcode,
-                role = "User"
+                postcode = postcode
             };
-            var postResponse = await httpClient.PostAsJsonAsync("https://localhost:7238/api/Authentication/", newUser);
+            var postResponse = await httpClient.PostAsJsonAsync($"https://localhost:7238/api/Authentication/", newUser);
             Console.WriteLine(postResponse.ToString());
             return postResponse.IsSuccessStatusCode;
         }
         return false;
     }
-    public async Task<bool> Update(Guid guid,string email, string password, string username, string firstname, string lastname, string? phonenumber, string address, string postcode)
+    public async Task<bool> Update(string email, string password, string username, string firstname, string lastname, string? phonenumber, string city, string country, string address, string postcode)
     {
         List<Authentication>? authentications = null;
 
@@ -111,23 +112,28 @@ public class AuthenticationService
 
             authentications = await response.Content.ReadFromJsonAsync(AuthSerializerContext.Default.ListAuthentication);
 
-            if (authentications.Any(a => a.email.Equals(email, StringComparison.OrdinalIgnoreCase)))
+            var userIdstring = await GetUserIdAsync();
+            if (Guid.TryParse(userIdstring, out var userid)) ;
+            if (authentications.Any(a => a.email.Equals(email, StringComparison.OrdinalIgnoreCase) && !a.userid.Equals(userid)))
             {
                 return false; // Email already in use
             }
+
             var newUser = new Authentication
             {
-                userid = guid,
+                userid = userid,
                 email = email,
                 password = password, // Ensure you hash the password before storing it
                 username = username,
                 firstname = firstname,
                 lastname = lastname,
                 phone_number = phonenumber,
+                city = city,
+                country = country,
                 address = address,
                 postcode = postcode
             };
-            var postResponse = await httpClient.PostAsJsonAsync("https://localhost:7238/api/Authentication/", newUser);
+            var postResponse = await httpClient.PutAsJsonAsync($"https://localhost:7238/api/Authentication/{userid}", newUser);
             Console.WriteLine(postResponse.ToString());
             return postResponse.IsSuccessStatusCode;
         }
@@ -150,6 +156,8 @@ public class AuthenticationService
     {
         // Get the current user from ClaimsPrincipal
         var user = await GetCurrentUserAsync();
+
+        if (user == null) { return null; }
 
         // Check if the user is authenticated
         if (user.Identity?.IsAuthenticated == true)

@@ -37,5 +37,10 @@ namespace Store.Components.Models
         [Required(ErrorMessage = "Postcode required.")]
         [Phone(ErrorMessage = "Invalid postcode")]
         public string Postcode { get; set; }
+
+        [Required(ErrorMessage = "City is required.")]
+        public string City { get; set; }
+        [Required(ErrorMessage = "Country is required.")]
+        public string Country { get; set; }
     }
 }

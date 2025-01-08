@@ -13,7 +13,7 @@
     {
         <div class="text-center">
             <img src="/images/successs.png" alt="Success" style="width: 100px; height: 100px;" />
-            <p class="text-success">Product added successfully!</p>
+            <p class="text-success">You are logged in!</p>
             <a href="/" class="btn btn-success mt-3">Go to Main Page</a>
         </div>
     }
@@ -69,6 +69,7 @@
             }
             else
             {
+                isSuccessRedirect = false;
                 // Handle failed login (e.g., show a message)
                 Console.WriteLine("Login failed.");
             }
@@ -76,6 +77,11 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            loading = false; // Reset loading state after processing
+            StateHasChanged(); // Update the UI
         }
     }
 }
