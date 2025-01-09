@@ -1,12 +1,14 @@
 ﻿using Payments.Data;
 using DataEntities;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
+using Payment.RabbitMQPublisher;
 
 namespace Payments.Endpoints;
 
 public static class PaymentEndpoints
 {
-    public static void MapPaymentEndpoints (this IEndpointRouteBuilder routes)
+    public static void MapPaymentEndpoints (this IEndpointRouteBuilder routes, IConnection rabbitMqConnection)
     {
         var group = routes.MapGroup("/api/Payment");
 
@@ -15,21 +17,21 @@ public static class PaymentEndpoints
             return await db.Payment.ToListAsync();
         })
         .WithName("GetAllPayments")
-        .Produces<List<Payment>>(StatusCodes.Status200OK);
+        .Produces<List<DataEntities.Payment>>(StatusCodes.Status200OK);
 
         group.MapGet("/{id}", async  (Guid id, PaymentDataContext db) =>
         {
             return await db.Payment.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.paymentId == id)
-                is Payment model
+                is DataEntities.Payment model
                     ? Results.Ok(model)
                     : Results.NotFound();
         })
         .WithName("GetPaymentById")
-        .Produces<Payment>(StatusCodes.Status200OK)
+        .Produces<DataEntities.Payment>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
 
-        group.MapPut("/{id}", async  (Guid id, Payment payment, PaymentDataContext db) =>
+        group.MapPut("/{id}", async  (Guid id, DataEntities.Payment payment, PaymentDataContext db) =>
         {
             var affected = await db.Payment
                 .Where(model => model.paymentId == id)
@@ -48,15 +50,19 @@ public static class PaymentEndpoints
         .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status204NoContent);
 
-        group.MapPost("/", async (Payment payment, PaymentDataContext db) =>
+        group.MapPost("/", async (DataEntities.Payment payment, PaymentDataContext db) =>
         {
             payment.paymentId = Guid.NewGuid();
             db.Payment.Add(payment);
             await db.SaveChangesAsync();
+
+            var publisher = new PaymentPublisher(rabbitMqConnection);
+            publisher.PublishPaymentProcessed(payment.paymentId.ToString(), payment.orderid.ToString(), payment.PaymentMethod);
+
             return Results.Created($"/api/Payment/{payment.paymentId}",payment);
         })
         .WithName("CreatePayment")
-        .Produces<Payment>(StatusCodes.Status201Created);
+        .Produces<DataEntities.Payment>(StatusCodes.Status201Created);
 
         group.MapDelete("/{id}", async  (Guid id, PaymentDataContext db) =>
         {
@@ -67,7 +73,7 @@ public static class PaymentEndpoints
             return affected == 1 ? Results.Ok() : Results.NotFound();
         })
         .WithName("DeletePayment")
-        .Produces<Payment>(StatusCodes.Status200OK)
+        .Produces<DataEntities.Payment>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
     }
 }

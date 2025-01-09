@@ -11,7 +11,7 @@ public class PaymentDataContext : DbContext
     {
     }
 
-    public DbSet<Payment> Payment { get; set; } = default!;
+    public DbSet<DataEntities.Payment> Payment { get; set; } = default!;
 }
 
 public static class Extensions
@@ -81,10 +81,10 @@ public static class DbInitializer
 
         Guid temp = Guid.NewGuid();
         Thread.Sleep(300);
-        var products = new List<Payment>
+        var products = new List<DataEntities.Payment>
         {
-            new Payment { paymentId = new Guid(), amount = 33, date = DateTime.UtcNow, orderid = temp, PaymentMethod = "Visa", paymentstatus = "successful"},
-            new Payment { paymentId = new Guid(), amount = 33, date = DateTime.UtcNow, orderid = temp, PaymentMethod = "Visa", paymentstatus = "successful"},
+            new DataEntities.Payment { paymentId = new Guid(), amount = 33, date = DateTime.UtcNow, orderid = temp, PaymentMethod = "Visa", paymentstatus = "successful"},
+            new DataEntities.Payment { paymentId = new Guid(), amount = 33, date = DateTime.UtcNow, orderid = temp, PaymentMethod = "Visa", paymentstatus = "successful"},
 
         };
         context.AddRange(products);
