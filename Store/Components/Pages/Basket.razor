@@ -36,7 +36,7 @@ else
                     <td>@item.Name</td>
                     <td>@item.Price.ToString("0.00")</td>
                     <td>@item.Quantity</td>
-                    <td>@(item.Price * item.Quantity).ToString("0.00")</td>
+                    <td>@(item.Price * item.Quantity)</td>
                     <td>
                         <!-- Remove button without EditForm -->
                         <form @formname="@GetFormName(item.ProductId)" method="post" @onsubmit="() => RemoveItem(item.ProductId)">

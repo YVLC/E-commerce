@@ -13,14 +13,16 @@
 
 <div class="row">
     <div class="col-12">
-        <h2 class="fw-bolder"><span class="text-danger">Welcome to the Store</span></h2>
+        <h2 class="fw-bolder" style="color:mediumpurple">Welcome to the Store</h2>
     </div>
-        <div class="col-12">
+    <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <AuthorizeView>
-                        <NotAuthorized>
-                            <span>You are not logged in. Please <a class="fw-bolder" href="/login">click here</a> to login.</span>
+                    <NotAuthorized>
+                        <a href="/terms-of-service">Please check the terms and conditions before proceedings.</a><h4 style="color:red"> The company does not hold any responsability if you continue using the website but have not read our terms of use.</h4>
+                        <h3 style="color:red">If you register on the website, implied consent is applied.</h3>
+                        <span>You are not logged in. Please <a class="fw-bolder" href="/login">click here</a> to login.</span>
                             <span>Or click here to register <a class="fw-bolder" href="/register">click here</a> to register.</span>
                         </NotAuthorized>
                         <Authorized>
