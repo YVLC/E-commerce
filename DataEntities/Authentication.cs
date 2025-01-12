@@ -17,13 +17,13 @@ namespace DataEntities
         public Guid userid { get; set; }
 
         [JsonPropertyName("email")]
-        public string email { get; set; }
+        public string? email { get; set; }
 
         [JsonPropertyName("verifiedemail")]
         public bool verifiedemail { get; set; }
 
         [JsonPropertyName("password")]
-        public string password { get; set; }
+        public string? password { get; set; }
 
         [JsonPropertyName("username")]
         public string? username { get; set; }
@@ -38,19 +38,19 @@ namespace DataEntities
         public string? phone_number{ get; set; }
 
         [JsonPropertyName("city")]
-        public string city { get; set; }
+        public string? city { get; set; }
 
         [JsonPropertyName("country")]
-        public string country { get; set; }
+        public string? country { get; set; }
 
         [JsonPropertyName("address")]
-        public string address { get; set; }
+        public string? address { get; set; }
 
         [JsonPropertyName("postcode")]
-        public string postcode { get; set; }
+        public string? postcode { get; set; }
 
         [JsonPropertyName("role")]
-        public string role { get; set; }
+        public string? role { get; set; }
     }
 
 

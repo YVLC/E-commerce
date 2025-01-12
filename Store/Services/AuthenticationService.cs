@@ -19,7 +19,7 @@ public class AuthenticationService
     public async Task<List<Authentication>> GetAuthentications()
     {
         List<Authentication>? authentications = null;
-        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
+        var response = await httpClient.GetAsync("/api/Authentication");
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions
@@ -34,7 +34,7 @@ public class AuthenticationService
     }
     public async Task<LoginResponse?> Login(string email, string password)
     {
-        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
+        var response = await httpClient.GetAsync("/api/Authentication");
 
         if (response.IsSuccessStatusCode)
         {
@@ -63,7 +63,7 @@ public class AuthenticationService
         List<Authentication>? authentications = null;
 
         Guid guid = Guid.NewGuid();
-        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
+        var response = await httpClient.GetAsync("/api/Authentication");
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions
@@ -92,7 +92,7 @@ public class AuthenticationService
                 address = address,
                 postcode = postcode
             };
-            var postResponse = await httpClient.PostAsJsonAsync($"https://localhost:7238/api/Authentication/", newUser);
+            var postResponse = await httpClient.PostAsJsonAsync($"/api/Authentication/", newUser);
             Console.WriteLine(postResponse.ToString());
             return postResponse.IsSuccessStatusCode;
         }
@@ -133,7 +133,7 @@ public class AuthenticationService
                 address = address,
                 postcode = postcode
             };
-            var postResponse = await httpClient.PutAsJsonAsync($"https://localhost:7238/api/Authentication/{userid}", newUser);
+            var postResponse = await httpClient.PutAsJsonAsync($"/api/Authentication/{userid}", newUser);
             Console.WriteLine(postResponse.ToString());
             return postResponse.IsSuccessStatusCode;
         }
@@ -179,7 +179,7 @@ public class AuthenticationService
         try
         {
             // Make sure the URL expects a GUID in the path
-            var response = await httpClient.GetAsync($"https://localhost:7238/api/Authentication/{userId}");
+            var response = await httpClient.GetAsync($"/api/Authentication/{userId}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -211,7 +211,7 @@ public class AuthenticationService
     public async Task<bool> UpdateRole(Guid userId, string roleName)
     {
         // Retrieve user list from the API
-        var response = await httpClient.GetAsync("https://localhost:7238/api/Authentication");
+        var response = await httpClient.GetAsync("/api/Authentication");
         if (!response.IsSuccessStatusCode)
         {
             return false; // API call failed
@@ -240,7 +240,7 @@ public class AuthenticationService
         user.role = roleName;
 
         // Send the updated user object back to the API
-        var updateResponse = await httpClient.PostAsJsonAsync($"https://localhost:7238/api/Authentication/{userId}", user);
+        var updateResponse = await httpClient.PostAsJsonAsync($"/api/Authentication/{userId}", user);
         return updateResponse.IsSuccessStatusCode;
     }
 }

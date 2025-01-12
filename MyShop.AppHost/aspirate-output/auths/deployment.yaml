@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auths
+  labels:
+    app: auths
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auths
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: auths
+    spec:
+      containers:
+      - name: auths
+        image: thisisawesome12/auths:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 8443
+        envFrom:
+        - configMapRef:
+            name: auths-env
+        - secretRef:
+            name: auths-secrets
+      terminationGracePeriodSeconds: 180

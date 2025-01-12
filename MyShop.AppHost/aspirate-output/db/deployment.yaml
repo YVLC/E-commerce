@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: docker.io/library/postgres:16.4
+        imagePullPolicy: Always
+        ports:
+        - name: tcp
+          containerPort: 5432
+        envFrom:
+        - configMapRef:
+            name: db-env
+        - secretRef:
+            name: db-secrets
+      terminationGracePeriodSeconds: 180

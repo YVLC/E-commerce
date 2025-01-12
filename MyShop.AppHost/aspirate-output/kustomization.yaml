@@ -1,0 +1,18 @@
+namespace: tinyshop
+
+resources:
+- messaging
+- db
+- products
+- orders
+- payments
+- auths
+- store
+- notificationservice
+- namespace.yaml
+- dashboard.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+

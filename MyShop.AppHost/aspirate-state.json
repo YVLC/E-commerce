@@ -1,0 +1,54 @@
+{
+  "projectPath": ".",
+  "allowClearNamespace": true,
+  "namespace": "theshop",
+  "containerRegistry": "localhost:6000",
+  "containerImageTags": [
+    "latest"
+  ],
+  "imagePullPolicy": "Always",
+  "containerBuilder": "docker",
+  "kubeContext": "docker-desktop",
+  "outputFormat": "kustomize",
+  "privateRegistryEmail": "aspir8@aka.ms",
+  "includeDashboard": true,
+  "useCustomNamespace": true,
+  "secrets": {
+    "salt": "dq\u002BkFwsIvYzXPgo2",
+    "hash": "OV\u002BCJ5gWnSByy4U1ONm\u002B\u002BqnPgMeRd2iBbxeqKD7zZXY=",
+    "secrets": {
+      "messaging-password": {
+        "value": "dq\u002BkFwsIvYzXPgo2hJKrzTUjFI5V3dTEySv9ITcUdxgLVykFg3r5cWC/MH7w/gFFp0A="
+      },
+      "db-password": {
+        "value": "dq\u002BkFwsIvYzXPgo2CzigRMXOt9Io7vA4jcFHXQocVjx8ZjcipAaQByfeMnq842pUk2U="
+      },
+      "messaging": {},
+      "db": {
+        "POSTGRES_PASSWORD": "dq\u002BkFwsIvYzXPgo2CzigRMXOt9Io7vA4jcFHXQocVjx8ZjcipAaQByfeMnq842pUk2U="
+      },
+      "productsdb": {},
+      "paymentsdb": {},
+      "authdb": {},
+      "orderdb": {},
+      "products": {
+        "ConnectionStrings__productsdb": "dq\u002BkFwsIvYzXPgo2KOewIaTcgXxHv0IH\u002BGjAUQU0XScOZj98mlHRMHzaYj70smVMjFbTKxzl5kQ/tXICY5xRwSktgE/H79g0PC2o7QdwvUq0V9sPl39A8XP/oRFgRyWJGk3QVLoRnxKdlcoGOCxELUlXiQ=="
+      },
+      "orders": {
+        "ConnectionStrings__orderdb": "dq\u002BkFwsIvYzXPgo26WE31seVxQwg9OZ5Rora/wU0XScOZj98mlHRMHzaYj70smVMjFbTKxzl5kQ/tXICY5xRwSktgE/H79g0PC2o7QdwvUq0V9sPl39A8XP/oRFgRyWJGk3QVLoRnxKdisoNOStDOw=="
+      },
+      "payments": {
+        "ConnectionStrings__paymentsdb": "dq\u002BkFwsIvYzXPgo2wGbFZIyjCH7EIrhn\u002BgtNJgU0XScOZj98mlHRMHzaYj70smVMjFbTKxzl5kQ/tXICY5xRwSktgE/H79g0PC2o7QdwvUq0V9sPl39A8XP/oRFgRyWJGk3QVLoRnxKdldkQMTxJLUlXiQ=="
+      },
+      "auths": {
+        "ConnectionStrings__authdb": "dq\u002BkFwsIvYzXPgo2RNjoU9oj0jvrjLYAqjt7wwU0XScOZj98mlHRMHzaYj70smVMjFbTKxzl5kQ/tXICY5xRwSktgE/H79g0PC2o7QdwvUq0V9sPl39A8XP/oRFgRyWJGk3QVLoRnxKdhM0dND1F"
+      },
+      "store": {},
+      "notificationservice": {
+        "ConnectionStrings__messaging": "dq\u002BkFwsIvYzXPgo22n3KInW0gSC\u002Bf4rExQYuqSw2XyMJLXIgv1vQMHuVGVSNsWVLq235EEShi1Ij8HFUa7dGuhQpgE/R58M\u002BZlDao18N"
+      }
+    }
+  },
+  "processAllComponents": true,
+  "isRunning": true
+}
